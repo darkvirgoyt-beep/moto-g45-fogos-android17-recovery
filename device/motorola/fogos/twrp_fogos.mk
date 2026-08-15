@@ -19,4 +19,4 @@ PRODUCT_NAME := twrp_fogos
 PRODUCT_DEVICE := fogos
 PRODUCT_MANUFACTURER := motorola
 PRODUCT_BRAND := motorola
-PRODUCT_MODEL := moto g34 5G
+PRODUCT_MODEL := moto g45 5G

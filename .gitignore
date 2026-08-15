@@ -1,0 +1,21 @@
+# Android build outputs
+out/
+.cache/
+ccache/
+
+# Large firmware and recovery artifacts
+*.img
+*.zip
+*.bin
+*.iso
+
+# Device-private or locally collected files
+private-inputs/
+local/
+*.log
+
+# Editor and OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

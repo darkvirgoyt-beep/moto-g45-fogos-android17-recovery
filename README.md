@@ -4,11 +4,11 @@ This repository is a research and build workspace for developing a recovery envi
 
 ## Current device context
 
-The available evidence identifies the device as a Motorola moto g45 5G with Android 17, build `CPRA.260605.016`, kernel `5.4.302-moto-KAGE`, and an A/B partition layout. The user's ROM package is labeled approximately `260812-fogos-12.1-Unofficial` and its extracted payload contains `boot.img` and `vendor_boot.img`.
+The available evidence identifies the device as a Motorola moto g45 5G with Android 17, build `CPRA.260605.016`, kernel `5.4.302-moto-KAGE`, and an A/B partition layout. The user's ROM package is verified as `EvolutionX-17.0-20260812-fogos-12.1-Unofficial`. Its signed `payload.bin` contains `boot.img` and `vendor_boot.img`, but no `init_boot.img`; the exact sizes and archive checksum are recorded in [`docs/ROM_INPUT.md`](docs/ROM_INPUT.md).
 
 ## Project status
 
-The existing public fogos TWRP device tree is based on TWRP 12.1 and is not assumed to be compatible with Android 17. No verified OrangeFox Android 17 build for this device has been identified. This repository will first collect the exact ROM and device inputs, then document any required device-tree changes before attempting a build.
+The existing public fogos TWRP device tree is based on TWRP 12.1 and is not assumed to be compatible with Android 17. The verified ROM layout now confirms that both `boot` and `vendor_boot` are present, so recovery placement and vendor ramdisk handling remain to be validated. No verified OrangeFox Android 17 build for this device has been identified. This repository documents the baseline and the porting gaps; it does not yet publish a flash-ready image.
 
 ## Safety policy
 

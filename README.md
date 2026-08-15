@@ -1,14 +1,14 @@
-# Moto G45 5G (fogos) Android 17 Recovery Project
+# VirgoYT Moto G45 5G (fogos) Android 17 TWRP Project
 
-This repository is a research and build workspace for developing a recovery environment for the Motorola moto g45 5G, codename `fogos`, running an unofficial Evolution X Android 17 build. The project is intentionally conservative: no recovery image is considered flash-ready until it has been built from verified sources and tested by temporary boot on the target device.
+This public repository is VirgoYT’s research and build workspace for developing a recovery environment for the Motorola moto g45 5G, codename `fogos`, running the unofficial Evolution X Android 17 build. The intended target is a 2026 Android 17 recovery—not an Android 15 build and not a relabeled 2024 TWRP image. No recovery image is considered boot-ready until it has been built from verified sources and tested by temporary boot on the target device.
 
 ## Current device context
 
 The available evidence identifies the device as a Motorola moto g45 5G with Android 17, build `CPRA.260605.016`, kernel `5.4.302-moto-KAGE`, and an A/B partition layout. The user's ROM package is verified as `EvolutionX-17.0-20260812-fogos-12.1-Unofficial`. Its signed `payload.bin` contains `boot.img` and `vendor_boot.img`, but no `init_boot.img`; the exact sizes and archive checksum are recorded in [`docs/ROM_INPUT.md`](docs/ROM_INPUT.md).
 
-## Project status
+## VirgoYT project status
 
-The existing public fogos TWRP device tree is based on TWRP 12.1 and is not assumed to be compatible with Android 17. The verified ROM layout now confirms that both `boot` and `vendor_boot` are present, so recovery placement and vendor ramdisk handling remain to be validated. No verified OrangeFox Android 17 build for this device has been identified. This repository documents the baseline and the porting gaps; it does not yet publish a flash-ready image.
+The available fogos TWRP tree is based on TWRP 12.1 and is not an Android 17 implementation. The verified ROM layout confirms that both `boot` and `vendor_boot` are present, so recovery placement and vendor-ramdisk handling must still be validated. No verified OrangeFox or Android 17 TWRP source for this device has been identified. The repository therefore contains the VirgoYT baseline, build automation template, and porting notes; it does not yet publish a genuine Android 17 recovery image.
 
 ## Safety policy
 
@@ -26,6 +26,10 @@ The following inputs are required before a build configuration can be finalized:
 | Kernel source or ROM kernel configuration | Required if recovery needs kernel or driver changes |
 | Current recovery behavior | Determines whether data can be mounted/decrypted and whether ADB works |
 | Desired feature set | Defines whether the target is TWRP-style flashing, OrangeFox UI, or a minimal sideload recovery |
+
+## Automation and releases
+
+The intended automation builds on pushes and pull requests, validates the generated image header and partition size, and creates a GitHub Release only from a successful validated build when explicitly requested. The workflow template is currently stored in `ci/twrp-build-release.yml` because the connected GitHub authorization lacks permission to push active files under `.github/workflows/`. It must be moved to `.github/workflows/` before GitHub Actions can execute it.
 
 ## References
 

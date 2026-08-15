@@ -1,0 +1,135 @@
+name: VirgoYT fogos Android 17 TWRP build and release
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      publish_release:
+        description: Create a GitHub Release after a successful validated build
+        required: true
+        default: false
+        type: boolean
+      release_tag:
+        description: Release tag, used only when publish_release is true
+        required: false
+        default: twrp-fogos-test
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fogos-twrp-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build VirgoYT fogos Android 17 TWRP
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      ALLOW_MISSING_DEPENDENCIES: true
+    steps:
+      - name: Check out device tree
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            adb autoconf automake bc bison build-essential ccache curl flex \
+            g++-multilib gcc-multilib git git-lfs gnupg gperf imagemagick \
+            lib32ncurses5-dev lib32readline-dev lib32z1-dev libelf-dev \
+            liblz4-tool libncurses5-dev libncursesw5-dev libssl-dev \
+            libxml2-utils lzop pngcrush rsync schedtool squashfs-tools \
+            unzip xsltproc zip zlib1g-dev
+
+      - name: Install repo launcher
+        run: |
+          mkdir -p "$HOME/bin"
+          curl -fsSL https://storage.googleapis.com/git-repo-downloads/repo -o "$HOME/bin/repo"
+          chmod 0755 "$HOME/bin/repo"
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+
+      - name: Configure Java 11
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+
+      - name: Initialize TWRP source
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/twrp-source"
+          cd "$GITHUB_WORKSPACE/twrp-source"
+          repo init --depth=1 \
+            -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git \
+            -b twrp-12.1
+          mkdir -p .repo/local_manifests
+          cat > .repo/local_manifests/fogos.xml <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <manifest>
+            <remote name="github" fetch="https://github.com/" />
+            <project path="device/motorola/fogos"
+                     name="darkvirgoyt-beep/moto-g45-fogos-android17-recovery"
+                     remote="github"
+                     revision="${GITHUB_SHA}" />
+          </manifest>
+          EOF
+          repo sync -c --no-clone-bundle --no-tags --optimized-fetch -j2
+
+      - name: Build recovery boot image
+        working-directory: twrp-source
+        run: |
+          source build/envsetup.sh
+          lunch twrp_fogos-eng
+          mka bootimage adbd -j"$(nproc)"
+
+      - name: Validate generated image
+        working-directory: twrp-source
+        run: |
+          set -euo pipefail
+          image="out/target/product/fogos/boot.img"
+          test -f "$image"
+          test "$(stat -c %s "$image")" -eq 100663296
+          test "$(od -An -N8 -tc "$image" | tr -d ' \n')" = "ANDROID!"
+          sha256sum "$image" | tee "$GITHUB_WORKSPACE/fogos-twrp-boot.sha256"
+          cp "$image" "$GITHUB_WORKSPACE/twrp-fogos-${GITHUB_SHA}.img"
+          {
+            echo "commit=${GITHUB_SHA}"
+            echo "run=${GITHUB_RUN_ID}"
+            echo "size=$(stat -c %s "$image")"
+            echo "sha256=$(cut -d ' ' -f1 "$GITHUB_WORKSPACE/fogos-twrp-boot.sha256")"
+            echo "header=$(od -An -N8 -tc "$image" | tr -d ' \n')"
+          } | tee "$GITHUB_WORKSPACE/fogos-twrp-build-info.txt"
+
+      - name: Upload validated build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: twrp-fogos-${{ github.sha }}
+          if-no-files-found: error
+          path: |
+            twrp-fogos-${{ github.sha }}.img
+            fogos-twrp-boot.sha256
+            fogos-twrp-build-info.txt
+
+      - name: Create GitHub Release
+        if: ${{ inputs.publish_release == true }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          set -euo pipefail
+          test -n "$RELEASE_TAG"
+          gh release create "$RELEASE_TAG" \
+            "twrp-fogos-${GITHUB_SHA}.img" \
+            fogos-twrp-boot.sha256 \
+            fogos-twrp-build-info.txt \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$RELEASE_TAG" \
+            --notes "VirgoYT fogos Android 17 TWRP build from ${GITHUB_SHA}. Target: Moto G45 5G (fogos), 2026 project. Temporary-boot test only; no permanent flashing is implied." \
+            --target "$GITHUB_SHA"

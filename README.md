@@ -1,8 +1,8 @@
 <div align="center">
 
-# VirgoYT Fogos Recovery
+# VirgoYT Unofficial Custom TWRP
 
-### Moto G45 5G • `fogos` • Android 17 research and porting project
+### Moto G45 5G • `fogos` • Android 17 custom-recovery porting project
 
 <img src="docs/assets/virgoyt-banner.jpg" alt="VirgoYT Prince branding" width="640" />
 
@@ -21,12 +21,13 @@
 
 </div>
 
-> **Project identity:** VirgoYT recovery work for the Motorola Moto G45 5G, codename `fogos`. The intended target is a genuinely tested 2026 Android 17 recovery—not an Android 15 build and not a relabeled older image.
+> **Project identity:** This is an **unofficial VirgoYT custom TWRP project** for the Motorola Moto G45 5G, codename `fogos`. The long-term target is a genuinely tested 2026 Android 17 recovery—not an Android 15 build and not a relabeled older image. The currently downloadable file is clearly marked as an older TeamWin baseline, not as a finished VirgoYT Android 17 build.
 
 ## Device profile
 
 | Property | Verified value |
 | --- | --- |
+| Project type | Unofficial custom TWRP / Android 17 porting project |
 | Device | Motorola Moto G45 5G |
 | Codename | `fogos` |
 | ROM | Evolution X 17.0, unofficial fogos build |
@@ -43,7 +44,7 @@ The ROM package was inspected from its signed `payload.bin`; the verified partit
 
 ## Current status
 
-The repository contains a `fogos` TWRP 12.1 baseline, modern SM6375 board-layout notes, Android 17 porting documentation, a build workflow template, and the verified ROM metadata. The old public TeamWin image is useful as a device reference, but it is not an Android 17 VirgoYT build.
+The repository contains an **unofficial custom TWRP development tree** for `fogos`, modern SM6375 board-layout notes, Android 17 porting documentation, a build workflow template, and verified ROM metadata. The downloadable recovery image is an older official TeamWin baseline used as a device reference and temporary-boot test; it is not yet a VirgoYT-built Android 17 image.
 
 | Component | Status |
 | --- | --- |
@@ -58,18 +59,18 @@ The repository contains a `fogos` TWRP 12.1 baseline, modern SM6375 board-layout
 
 The project deliberately does not call the old 2024 image “Android 17.” A recovery image is considered ready only after it builds from the updated source, passes image validation, and is temporarily boot-tested on the target phone.
 
-## Downloadable baseline release
+## Downloadable unofficial custom-TWRP baseline
 
-The public release below is the **official 2024 fogos TWRP 3.7.1 baseline**. It is not a new VirgoYT Android 17 recovery, and compatibility with the user’s Android 17 ROM is not guaranteed.
+The public release below is labeled **VirgoYT Unofficial Custom TWRP 3.7.1 Baseline** for Moto G45 5G (`fogos`). The image itself is the verified 2024 TeamWin fogos build supplied as a baseline for this unofficial project. It is not a newly compiled VirgoYT Android 17 recovery, and compatibility with the user’s Android 17 ROM is not guaranteed.
 
-### [Download VirgoYT fogos TWRP 3.7.1 baseline](https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/releases/tag/virgoyt-fogos-twrp-3.7.1-baseline)
+### [Download VirgoYT Unofficial Custom TWRP 3.7.1 Baseline for fogos](https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/releases/tag/virgoyt-unofficial-custom-twrp-3.7.1-baseline)
 
 | Asset | Link |
 | --- | --- |
-| Recovery image | [twrp-3.7.1_12-0-fogos.img](https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/releases/download/virgoyt-fogos-twrp-3.7.1-baseline/twrp-3.7.1_12-0-fogos.img) |
-| SHA-256 file | [twrp-3.7.1_12-0-fogos.img.sha256](https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/releases/download/virgoyt-fogos-twrp-3.7.1-baseline/twrp-3.7.1_12-0-fogos.img.sha256) |
-| Temporary-boot guide | [TEMPORARY_BOOT.md](https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/releases/download/virgoyt-fogos-twrp-3.7.1-baseline/TEMPORARY_BOOT.md) |
-| Release notes | [RELEASE_NOTES.md](https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/releases/download/virgoyt-fogos-twrp-3.7.1-baseline/RELEASE_NOTES.md) |
+| Recovery image | [twrp-3.7.1_12-0-fogos.img](https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/releases/download/virgoyt-unofficial-custom-twrp-3.7.1-baseline/twrp-3.7.1_12-0-fogos.img) |
+| SHA-256 file | [twrp-3.7.1_12-0-fogos.img.sha256](https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/releases/download/virgoyt-unofficial-custom-twrp-3.7.1-baseline/twrp-3.7.1_12-0-fogos.img.sha256) |
+| Temporary-boot guide | [TEMPORARY_BOOT.md](https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/releases/download/virgoyt-unofficial-custom-twrp-3.7.1-baseline/TEMPORARY_BOOT.md) |
+| Release notes | [VIRGOYT_UNOFFICIAL_CUSTOM_TWRP_RELEASE_NOTES.md](https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/releases/download/virgoyt-unofficial-custom-twrp-3.7.1-baseline/VIRGOYT_UNOFFICIAL_CUSTOM_TWRP_RELEASE_NOTES.md) |
 
 Verified SHA-256:
 
@@ -92,7 +93,7 @@ The old TWRP tree cannot be treated as complete Android 17 support. It must be a
 
 ## Automation
 
-The corrected workflow template is stored at [`ci/twrp-build-release.yml`](ci/twrp-build-release.yml). GitHub only executes workflow files located under `.github/workflows/`, so this template must be copied to:
+The corrected **custom-TWRP build workflow template** is stored at [`ci/twrp-build-release.yml`](ci/twrp-build-release.yml). GitHub only executes workflow files located under `.github/workflows/`, so this template must be copied to:
 
 ```text
 .github/workflows/twrp-build-release.yml
@@ -110,7 +111,7 @@ Do not relock the bootloader while a custom ROM is installed. Do not use an imag
 
 | Path | Purpose |
 | --- | --- |
-| `device/motorola/fogos/` | Checked-in fogos TWRP baseline and device configuration |
+| `device/motorola/fogos/` | Unofficial fogos custom-TWRP baseline and device configuration |
 | `docs/ROM_INPUT.md` | Verified Evolution X payload details and image sizes |
 | `docs/RECOVERY_SOURCES.md` | Official TWRP and LineageOS source assessment |
 | `docs/ANDROID17_PORT_NOTES.md` | Android 17 board and recovery porting worklist |

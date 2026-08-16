@@ -15,7 +15,8 @@
   <a href="https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/releases">Releases</a> •
   <a href="https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/actions">Actions</a> •
   <a href="docs/ROM_INPUT.md">ROM input</a> •
-  <a href="docs/BUILD_AND_TEST.md">Build and test guide</a>
+  <a href="docs/BUILD_AND_TEST.md">Build and test guide</a> •
+  <a href="docs/MAGISK_ROOT_TROUBLESHOOTING.md">Root troubleshooting</a>
 </p>
 
 </div>
@@ -114,6 +115,7 @@ Do not relock the bootloader while a custom ROM is installed. Do not use an imag
 | `docs/RECOVERY_SOURCES.md` | Official TWRP and LineageOS source assessment |
 | `docs/ANDROID17_PORT_NOTES.md` | Android 17 board and recovery porting worklist |
 | `docs/BUILD_AND_TEST.md` | Reproducible build and temporary-boot procedure |
+| `docs/MAGISK_ROOT_TROUBLESHOOTING.md` | Verified Magisk findings and safe root test sequence |
 | `docs/assets/virgoyt-banner.jpg` | VirgoYT project branding image |
 | `ci/twrp-build-release.yml` | Workflow template for manual activation |
 

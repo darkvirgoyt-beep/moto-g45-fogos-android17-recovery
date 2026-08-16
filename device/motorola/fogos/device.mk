@@ -14,8 +14,8 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/gsi_keys.mk)
 AB_OTA_UPDATER := true
 TARGET_ENFORCE_AB_OTA_PARTITION_LIST := true
 
-# Enable virtual A/B OTA
-$(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk) 
+# Android 17 fogos uses a vendor-ramdisk boot path for A/B recovery.
+$(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota/launch_with_vendor_ramdisk.mk)
 
 
 AB_OTA_PARTITIONS += \
@@ -85,5 +85,11 @@ PRODUCT_TARGET_VNDK_VERSION := 30
 PRODUCT_SOONG_NAMESPACES += \
     $(LOCAL_PATH)
 
-# Copy modules for depmod
-PRODUCT_COPY_FILES += $(call find-copy-subdir-files,*.ko,$(LOCAL_PATH)/prebuilt/modules,$(TARGET_COPY_OUT_RECOVERY)/root/vendor/lib/modules/1.1)    
+# First-stage recovery metadata for the Android 17 vendor-ramdisk layout.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/recovery.fstab:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom \
+    $(LOCAL_PATH)/recovery.fstab:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom
+
+# Keep a legacy recovery-root fallback, but use only the exact Android 17
+# recovery modules selected in modules.load.recovery.
+PRODUCT_COPY_FILES += $(foreach module,$(FOGOS_RECOVERY_MODULE_NAMES),$(LOCAL_PATH)/prebuilt/modules/$(module):$(TARGET_COPY_OUT_RECOVERY)/root/vendor/lib/modules/1.1/$(module))

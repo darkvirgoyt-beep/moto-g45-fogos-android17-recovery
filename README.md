@@ -91,6 +91,8 @@ The Android 17 port is being aligned with the modern SM6375 configuration used b
 
 The old TWRP tree cannot be treated as complete Android 17 support. It must be adapted to the current vendor ramdisk, kernel modules, fstab, encryption behavior, SELinux policy, and recovery boot header. The detailed worklist is in [`docs/ANDROID17_PORT_NOTES.md`](docs/ANDROID17_PORT_NOTES.md), while the safe build and temporary-boot policy is in [`docs/BUILD_AND_TEST.md`](docs/BUILD_AND_TEST.md).
 
+A first experimental adaptation is now in the source tree: it reuses the exact Evolution X Android 17 fogos kernel, enables the vendor-ramdisk recovery path, adds official recovery module ordering, and places `fstab.qcom` in the first-stage vendor ramdisk. **No candidate image has passed a build or phone test yet**, so the old baseline release remains the only downloadable image and is not Android 17-compatible.
+
 ## Automation
 
 The corrected **custom-TWRP build workflow template** is stored at [`ci/twrp-build-release.yml`](ci/twrp-build-release.yml). GitHub only executes workflow files located under `.github/workflows/`, so this template must be copied to:

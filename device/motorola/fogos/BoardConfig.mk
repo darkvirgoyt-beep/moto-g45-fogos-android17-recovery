@@ -35,7 +35,9 @@ TARGET_KERNEL_ARCH := arm64
 BOARD_KERNEL_BASE := 0x00000000
 BOARD_KERNEL_IMAGE_NAME := Image
 BOARD_KERNEL_PAGESIZE := 4096
-BOARD_KERNEL_SEPARATED_DTBO := true
+# Android 17 uses the separate dtbo partition; no recovery_dtbo is embedded
+# in a header-v3 A/B boot image. The prebuilt-kernel build does not generate a
+# DTBO target, so do not request a recovery DTBO here.
 BOARD_BOOT_HEADER_VERSION := 3
 BOARD_RAMDISK_USE_LZ4 := true
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
@@ -109,8 +111,8 @@ BOARD_HAS_LARGE_FILESYSTEM := true
 BOARD_HAS_NO_SELECT_BUTTON := true
 BOARD_SUPPRESS_SECURE_ERASE := true
 BOARD_USES_RECOVERY_AS_BOOT := true
-BOARD_INCLUDE_RECOVERY_DTBO := true
-BOARD_INCLUDE_DTB_IN_BOOTIMG := true
+# Header-v3 A/B devices keep DTB/DTBO in vendor_boot and the dtbo partition;
+# this TWRP boot image must not request a recovery_dtbo or embedded DTB.
 TARGET_NO_RECOVERY := true
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery.fstab
 TARGET_RECOVERY_DENSITY := hdpi

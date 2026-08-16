@@ -136,7 +136,7 @@ jobs:
             printf 'android17_verified=false\n'
           } | tee "$GITHUB_WORKSPACE/fogos-twrp-build-info.txt"
 
-      - name: Upload validated artifact
+            - name: Upload validated artifact
         uses: actions/upload-artifact@v4
         with:
           name: virgoyt-fogos-twrp-${{ github.sha }}
@@ -146,7 +146,7 @@ jobs:
             fogos-twrp-boot.sha256
             fogos-twrp-build-info.txt
 
-        release:
+  release:
     name: Publish manually requested release
     needs: build
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_release == true && needs.build.result == 'success' }}
@@ -163,7 +163,7 @@ jobs:
 
       - name: Publish GitHub Release
         env:
-          GH_TOKEN: ${ github.token }}
+          GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.release_tag }}
         shell: bash
         run: |

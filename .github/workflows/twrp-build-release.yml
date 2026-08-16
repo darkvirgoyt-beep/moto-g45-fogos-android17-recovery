@@ -102,9 +102,13 @@ jobs:
         working-directory: twrp-source
         shell: bash
         run: |
-          set -euo pipefail
+          # AOSP envsetup references TOP while it initializes; strict -u must
+          # be enabled only after envsetup and lunch have completed.
+          set -eo pipefail
+          test -f build/envsetup.sh
           source build/envsetup.sh
           lunch twrp_fogos-eng
+          set -u
           mka bootimage adbd -j"$(nproc)"
 
       - name: Validate image and write metadata
@@ -168,4 +172,4 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --title "$RELEASE_TAG" \
             --notes "VirgoYT Moto G45 5G (fogos) recovery baseline. Temporary-boot test only. Android 17 compatibility is not claimed until separately verified." \
-            --target "$GITHUB_SHA"
+            --target "$GITHUB_S

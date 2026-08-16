@@ -91,11 +91,10 @@ TARGET_VENDOR_PROP += $(DEVICE_PATH)/vendor.prop
 # seven modules extracted from the Android 17 vendor_boot are packaged; the
 # remaining checked-in modules belong to the older baseline kernel.
 FOGOS_RECOVERY_MODULE_NAMES := $(strip $(shell cat $(DEVICE_PATH)/modules.load.recovery))
-FOGOS_RECOVERY_MODULES := $(addprefix $(DEVICE_PATH)/prebuilt/modules/,$(FOGOS_RECOVERY_MODULE_NAMES))
-BOARD_VENDOR_RAMDISK_KERNEL_MODULES := $(FOGOS_RECOVERY_MODULES)
-BOARD_RECOVERY_KERNEL_MODULES := $(FOGOS_RECOVERY_MODULES)
+# Follow the current SM6375/fogos build pattern: module filenames are load
+# metadata, not C/C++ source inputs. The custom TW_LOAD_VENDOR_MODULES macro
+# is intentionally omitted because it expands raw .ko names into clang flags.
 BOARD_VENDOR_RAMDISK_RECOVERY_KERNEL_MODULES_LOAD := $(FOGOS_RECOVERY_MODULE_NAMES)
-BOARD_RECOVERY_KERNEL_MODULES_LOAD := $(FOGOS_RECOVERY_MODULE_NAMES)
 BOOT_KERNEL_MODULES := $(FOGOS_RECOVERY_MODULE_NAMES)
 
 # QCOM encryption and decryption
@@ -145,7 +144,6 @@ TW_INCLUDE_CRYPTO := true
 TW_NO_EXFAT_FUSE := true
 TW_INCLUDE_REPACKTOOLS := true
 TW_INCLUDE_RESETPROP := true
-TW_LOAD_VENDOR_MODULES := $(FOGOS_RECOVERY_MODULE_NAMES)
 
 # Statusbar icons flags
 TW_STATUS_ICONS_ALIGN := center

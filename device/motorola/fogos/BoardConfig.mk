@@ -141,6 +141,9 @@ TW_MAX_BRIGHTNESS := 2047
 TW_EXCLUDE_DEFAULT_USB_INIT := true
 TW_EXTRA_LANGUAGES := true
 TW_INCLUDE_CRYPTO := true
+# Android stores user media under /data/media/0. This enables TWRP's
+# emulated-storage setup without formatting or wiping userdata.
+RECOVERY_SDCARD_ON_DATA := true
 TW_NO_EXFAT_FUSE := true
 TW_INCLUDE_REPACKTOOLS := true
 TW_INCLUDE_RESETPROP := true

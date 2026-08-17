@@ -119,6 +119,7 @@ Do not relock the bootloader while a custom ROM is installed. Do not use an imag
 | `docs/ANDROID17_PORT_NOTES.md` | Android 17 board and recovery porting worklist |
 | `docs/BUILD_AND_TEST.md` | Reproducible build and temporary-boot procedure |
 | `docs/MAGISK_ROOT_TROUBLESHOOTING.md` | Verified Magisk findings and safe root test sequence |
+| `docs/TWRP_STORAGE_SIDELOAD_FIX.md` | Android 17 data-media, encryption, USB-OTG, and sideload fixes |
 | `docs/assets/virgoyt-banner.jpg` | VirgoYT project branding image |
 | `ci/twrp-build-release.yml` | Workflow template for manual activation |
 

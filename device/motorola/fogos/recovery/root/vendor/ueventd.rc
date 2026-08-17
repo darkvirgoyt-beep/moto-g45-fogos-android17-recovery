@@ -198,6 +198,12 @@ firmware_directories /vendor/firmware_mnt/image/
 /dev/hidraw8              0660   system     system
 /dev/hidraw9              0660   system     system
 
+# Keep both direct touchscreen and USB HID mouse input available to TWRP.
+# These rules are non-destructive and do not alter USB gadget functions.
+/dev/input/event*         0660   root       input
+/dev/input/mice           0660   root       input
+/dev/input/mouse*         0660   root       input
+
 # Trustonic TEE device
 /dev/mobicore             0600   system     system
 /dev/mobicore-user        0666   system     system

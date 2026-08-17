@@ -1,0 +1,7 @@
+/lib/modules/chipone_tddi_v2_mmi.ko: /lib/modules/sensors_class.ko
+/lib/modules/mmi_info.ko: /lib/modules/mmi_annotate.ko
+/lib/modules/sensors_class.ko:
+/lib/modules/mmi-smbcharger-iio.ko:
+/lib/modules/mmi_annotate.ko:
+/lib/modules/ilitek_v3_mmi.ko: /lib/modules/sensors_class.ko
+/lib/modules/exfat.ko:

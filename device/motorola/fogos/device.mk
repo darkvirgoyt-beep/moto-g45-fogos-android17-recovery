@@ -90,6 +90,16 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery.fstab:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom \
     $(LOCAL_PATH)/recovery.fstab:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom
 
-# Keep a legacy recovery-root fallback, but use only the exact Android 17
-# recovery modules selected in modules.load.recovery.
-PRODUCT_COPY_FILES += $(foreach module,$(FOGOS_RECOVERY_MODULE_NAMES),$(LOCAL_PATH)/prebuilt/modules/$(module):$(TARGET_COPY_OUT_RECOVERY)/root/vendor/lib/modules/1.1/$(module))
+# Package the exact Android 17 vendor-ramdisk module layout in recovery.
+# The fogos vendor ramdisk loads modules from /lib/modules and uses the
+# modules.load.recovery dependency order. Keep this separate from USB HID,
+# so OTG keyboards and mice remain available alongside the touchscreen.
+FOGOS_RECOVERY_MODULE_METADATA := \
+    modules.alias \
+    modules.dep \
+    modules.load \
+    modules.load.recovery \
+    modules.softdep
+
+PRODUCT_COPY_FILES += $(foreach module,$(FOGOS_RECOVERY_MODULE_NAMES),$(LOCAL_PATH)/prebuilt/modules/$(module):$(TARGET_COPY_OUT_RECOVERY)/root/lib/modules/$(module))
+PRODUCT_COPY_FILES += $(foreach metadata,$(FOGOS_RECOVERY_MODULE_METADATA),$(LOCAL_PATH)/prebuilt/modules/$(metadata):$(TARGET_COPY_OUT_RECOVERY)/root/lib/modules/$(metadata))

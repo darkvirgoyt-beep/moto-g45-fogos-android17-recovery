@@ -118,6 +118,7 @@ jobs:
           set -euo pipefail
           image="out/target/product/fogos/boot.img"
           test -s "$image"
+          python3 "$GITHUB_WORKSPACE/tools/validate_fogos_recovery.py" "$image"
           magic="$(dd if="$image" bs=1 count=8 2>/dev/null)"
           test "$magic" = 'ANDROID!'
           size="$(stat -c '%s' "$image")"
@@ -133,6 +134,7 @@ jobs:
             printf 'size=%s\n' "$size"
             printf 'sha256=%s\n' "$(cut -d ' ' -f1 "$GITHUB_WORKSPACE/fogos-twrp-boot.sha256")"
             printf 'temporary_boot_only=true\n'
+            printf 'hardware_validation_required=true\n'
             printf 'android17_verified=false\n'
           } | tee "$GITHUB_WORKSPACE/fogos-twrp-build-info.txt"
 
@@ -173,5 +175,5 @@ jobs:
           gh release create "$RELEASE_TAG" release-assets/* \
             --repo "$GITHUB_REPOSITORY" \
             --title "$RELEASE_TAG" \
-            --notes "VirgoYT Moto G45 5G (fogos) recovery baseline. Temporary-boot test only. Android 17 compatibility is not claimed until separately verified." \
+            --notes "VirgoYT Moto G45 5G (fogos) Android 17 recovery candidate. Static storage, encryption, touchscreen-module, USB mouse/OTG, ADB, sideload, boot-header, size, and checksum gates passed. Temporary-boot test required before any permanent flash; physical touchscreen, decryption, mouse, and sideload behavior are not certifiable in CI." \
             --target "$GITHUB_SHA"

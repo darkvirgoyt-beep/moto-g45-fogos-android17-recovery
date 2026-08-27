@@ -91,14 +91,14 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery.fstab:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom \
     $(LOCAL_PATH)/recovery.fstab:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom
 
-# Force the audited device rules into the generic recovery root. The TeamWin
-# recovery-root hook also copies recovery/root, but these explicit entries make
-# the intended staging destination unambiguous and prevent generic init files
-# from replacing the corrected USB/touch/input rules.
+# Force the audited device rules into the actual recovery staging tree. Direct
+# recovery/root destinations are kept in addition to TARGET_RECOVERY_DEVICE_DIRS
+# because some TWRP product configurations rebuild the generic root directory
+# and can otherwise replace device-specific init files.
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/recovery/root/init.recovery.qcom.rc:$(TARGET_COPY_OUT_ROOT)/init.recovery.qcom.rc \
-    $(LOCAL_PATH)/recovery/root/init.recovery.usb.rc:$(TARGET_COPY_OUT_ROOT)/init.recovery.usb.rc \
-    $(LOCAL_PATH)/recovery/root/vendor/ueventd.rc:$(TARGET_COPY_OUT_ROOT)/vendor/ueventd.rc
+    $(LOCAL_PATH)/recovery/root/init.recovery.qcom.rc:recovery/root/init.recovery.qcom.rc \
+    $(LOCAL_PATH)/recovery/root/init.recovery.usb.rc:recovery/root/init.recovery.usb.rc \
+    $(LOCAL_PATH)/recovery/root/vendor/ueventd.rc:recovery/root/vendor/ueventd.rc
 
 # The BoardConfig declares the exact Android 17 module source paths and the
 # recovery load list. TeamWin then runs depmod and places the result in the

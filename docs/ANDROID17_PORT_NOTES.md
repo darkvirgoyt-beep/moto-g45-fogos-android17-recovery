@@ -19,7 +19,7 @@ The VirgoYT tree contains the following device-specific work:
 | Encryption | F2FS userdata with inline AES-256, wrapped-key v2, metadata encryption, and `/metadata/vold/metadata_encryption`. |
 | Emulated storage | `RECOVERY_SDCARD_ON_DATA := true`, TWRP storage flags, and `/data/media/0` modeling. |
 | OTG | Concrete `/dev/block/sdg1` plus `/dev/block/sdg` parent mapping; no wildcard `usbotg-*` aliases. |
-| Touch | Android 17 fogos touchscreen modules and dependency metadata under `/lib/modules`, with early-boot insertion in dependency order. |
+| Touch | Android 17 fogos touchscreen modules and generated dependency metadata under `/vendor/lib/modules/1.1`, with early-boot insertion in dependency order. |
 | Mouse/HID | USB HID, `/dev/input/event*`, `/dev/input/mice`, and `/dev/input/mouse*` support preserved. |
 | ADB/sideload | FunctionFS ADB, `update_engine_sideload`, `adbd`, and a clean configfs sideload transition. |
 
@@ -27,11 +27,11 @@ The VirgoYT tree contains the following device-specific work:
 
 The previous tree contained several crossed or stale values. `BOARD_SUPER_PARTITION_GROUPS` used a QTI group instead of the maintained Motorola group; an ODM image target was declared even though the verified payload inventory did not list an ODM partition; the product API/VNDK values were stale; the tree overrode platform/security-patch values; and the AVB section pointed to an AOSP test key. Those overrides were removed or aligned with the maintained fogos source.
 
-The USB init file also contained an unbalanced `${sys.usb.config` expansion at its tail and the sideload transition did not detach existing configfs functions before reusing `f1`. Both were corrected. A stray standalone `*/` token in `ueventd.rc` was removed. Early touch module insertion now follows the same dependency order as `modules.load.recovery`.
+The USB init file also contained an unbalanced `${sys.usb.config` expansion at its tail and the sideload transition did not detach existing configfs functions before reusing `f1`. Both were corrected. A stray standalone `*/` token in `ueventd.rc` was removed. Early touch module insertion now uses raw dependency-safe order (`mmi_annotate` before `mmi_info`) while the generated vendor-ramdisk metadata retains the upstream load list.
 
 ## Validation boundary
 
-The repository validator checks the corrected paths, partition group, encryption flags, input rules, module files and order, init property expansions, USB sideload transition, absence of test-key overrides, and the exact boot image size/header. A successful CI run remains a static result. It cannot certify hardware touch, mouse/OTG, user-data decryption, or host-side sideloading. Those must be tested on the exact phone by temporary boot before any permanent operation.
+The repository validator checks the corrected paths, partition group, encryption flags, input rules, module files and order, init property expansions, USB sideload transition, absence of test-key overrides, exact boot image size/header, and—when given a built image—the actual cpio contents and packaged file bytes. A successful CI run remains a static result. It cannot certify hardware touch, mouse/OTG, user-data decryption, or host-side sideloading. Those must be tested on the exact phone by temporary boot before any permanent operation.
 
 ## References
 

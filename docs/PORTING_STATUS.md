@@ -14,7 +14,7 @@ The checked-in recovery tree uses the inspected boot header and partition geomet
 | `/data` | Uses the fogos userdata block device, F2FS, inline AES-256 encryption, wrapped-key v2 metadata, and the metadata key directory. |
 | Emulated storage | `RECOVERY_SDCARD_ON_DATA := true` and TWRP `storage;settingsstorage` flags expose `/data/media/0` after successful decryption. |
 | USB-OTG | Uses the concrete `/dev/block/sdg1` partition and `/dev/block/sdg` parent instead of wildcard removable-storage aliases. |
-| Touchscreen | The Android 17 module files, dependency metadata, and dependency-ordered early-boot insertion are packaged under `/lib/modules`. |
+| Touchscreen | The Android 17 module files and generated dependency metadata are packaged by TeamWin under `/vendor/lib/modules/1.1`; the recovery init script inserts them from that canonical path in dependency-safe order. |
 | Mouse/HID | Input event, mouse, and USB HID paths remain enabled; the touchscreen patch does not remove mouse fallback. |
 | ADB/sideload | `adbd`, `minadbd`/sideload support, FunctionFS ADB, and the sideload gadget transition are retained and statically gated. |
 | Runtime syntax | The malformed USB property expansion and stray ueventd comment token were removed. |

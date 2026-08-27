@@ -160,7 +160,8 @@ def validate_image(image: Path) -> None:
     require(flags, "/usb-otg               vfat", "packaged twrp.flags")
     print(f"image={image}")
     print(f"image_size={len(data)}")
-    print(f"ramdisk_compression={'gzip' if data[ramdisk_offset:ramdisk_offset + 2] == b'\\x1f\\x8b' else 'lz4'}")
+    compression = "gzip" if data[ramdisk_offset:ramdisk_offset + 2] == bytes((0x1F, 0x8B)) else "lz4"
+    print(f"ramdisk_compression={compression}")
     print(f"packaged_entries={len(entries)}")
 
 

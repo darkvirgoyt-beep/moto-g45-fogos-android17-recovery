@@ -1,43 +1,44 @@
 # Android 17 port notes
 
-## Confirmed from the current fogos reference tree
+## Reference inputs
 
-The current official LineageOS fogos tree (commit `eb605967825f23f9f649b1f05b3b3d4f2fbc5fcc`) inherits `device/motorola/sm6375-common/BoardConfigCommon.mk`. The shared common board configuration contains values that match the user-provided Evolution X payload:
+The target is the Motorola Moto G45 5G (`fogos`) with the user-provided Evolution X 17.0 package. The payload record is documented in [`ROM_INPUT.md`](ROM_INPUT.md). Its relevant images are `boot.img`, `vendor_boot.img`, `dtbo.img`, `vbmeta.img`, and `vbmeta_system.img`; no `init_boot` image is present in the recorded payload.
 
-| Configuration | Current Lineage/common value | User payload |
-|---|---:|---:|
-| Boot header | Version 3 | `boot.img` begins with Android boot magic and is 100,663,296 bytes |
-| Boot partition | 100,663,296 bytes | 100,663,296 bytes |
-| DTBO partition | 25,165,824 bytes | 25,165,824 bytes |
-| Vendor boot partition | 100,663,296 bytes | 100,663,296 bytes |
-| Recovery model | `BOARD_USES_RECOVERY_AS_BOOT := true` | Payload has `boot` and `vendor_boot`, no `init_boot` |
-| Vendor ramdisk | `BOARD_BUILD_VENDOR_RAMDISK_IMAGE := true` | `vendor_boot.img` is present |
-| Recovery fstab | Shared `fstab.qcom` | Must be compared with Evolution X vendor layout |
-| Recovery DTB/DTBO | Includes recovery DTBO and DTB in boot image | `dtbo.img` is present |
+The maintained LineageOS fogos and SM6375-common sources provide the structural reference for the board: boot header version 3, 4 KiB pages, separated DTBO, DTB in boot, recovery-as-boot, vendor-ramdisk support, Motorola `mot_dp_group`, and the 100,663,296-byte boot/vendor-boot geometry. The TeamWin fogos tree remains a historical TWRP 12.1 reference and is not treated as Android 17 proof.[1] [2] [3]
 
-These matches strongly suggest that the current Lineage common tree is a better structural reference for an Android 17 port than the old standalone TWRP BoardConfig. However, it is an Android 16 reference and does not prove that the current Evolution X vendor ramdisk, kernel modules, encryption metadata, or SELinux policy are compatible.
+## Current device-tree adaptation
 
-## Current VirgoYT adaptation
+The VirgoYT tree contains the following device-specific work:
 
-The working branch now contains a first compatibility pass based on the verified Evolution X payload and the current fogos reference configuration:
+| Area | Implementation |
+| --- | --- |
+| Kernel | Prebuilt kernel extracted from the inspected Evolution X fogos payload. |
+| Boot packaging | Header v3, LZ4 ramdisk, DTB/DTBO integration matching the maintained fogos board conventions, recovery-as-boot, and vendor-ramdisk support. |
+| Dynamic partitions | Motorola `mot_dp_group` with `product`, `system`, `system_ext`, and `vendor`; the old QTI group and ODM target were removed. |
+| First-stage fstab | `recovery.fstab` is copied into the vendor-ramdisk first-stage location and the vendor fstab location. |
+| Encryption | F2FS userdata with inline AES-256, wrapped-key v2, metadata encryption, and `/metadata/vold/metadata_encryption`. |
+| Emulated storage | `RECOVERY_SDCARD_ON_DATA := true`, TWRP storage flags, and `/data/media/0` modeling. |
+| OTG | Concrete `/dev/block/sdg1` plus `/dev/block/sdg` parent mapping; no wildcard `usbotg-*` aliases. |
+| Touch | Android 17 fogos touchscreen modules and dependency metadata under `/lib/modules`, with early-boot insertion in dependency order. |
+| Mouse/HID | USB HID, `/dev/input/event*`, `/dev/input/mice`, and `/dev/input/mouse*` support preserved. |
+| ADB/sideload | FunctionFS ADB, `update_engine_sideload`, `adbd`, and a clean configfs sideload transition. |
 
-| Change | Evidence or purpose |
-|---|---|
-| Replaced the old prebuilt kernel | `device/motorola/fogos/prebuilt/Image` now matches the extracted Evolution X Android 17 `boot.img` kernel, SHA-256 `f0496203702eca73edf1bdf8d9a4e39d96409d4c8e134946f34fbeb2c90abbca` |
-| Enabled Android boot-image settings | Header version 3, 4 KiB pages, LZ4 ramdisk, recovery DTBO, DTB-in-boot, and the `fogos` HAB command-line property |
-| Enabled vendor-ramdisk recovery packaging | Uses `launch_with_vendor_ramdisk.mk` and copies `recovery.fstab` into the first-stage vendor ramdisk location |
-| Added recovery module ordering | Added `modules.load.recovery` with the seven official fogos recovery modules available in the checked-in prebuilt set |
+## Important corrections in this audit
 
-This is an **experimental source adaptation, not a finished recovery**. It has not yet produced a validated image and has not been tested on the user’s phone. The old TeamWin baseline already demonstrated that a recovery image can stop at the Hello Moto splash when its kernel and ramdisk are not compatible with the Android 17 boot environment.
+The previous tree contained several crossed or stale values. `BOARD_SUPER_PARTITION_GROUPS` used a QTI group instead of the maintained Motorola group; an ODM image target was declared even though the verified payload inventory did not list an ODM partition; the product API/VNDK values were stale; the tree overrode platform/security-patch values; and the AVB section pointed to an AOSP test key. Those overrides were removed or aligned with the maintained fogos source.
 
-## Required port work
+The USB init file also contained an unbalanced `${sys.usb.config` expansion at its tail and the sideload transition did not detach existing configfs functions before reusing `f1`. Both were corrected. A stray standalone `*/` token in `ueventd.rc` was removed. Early touch module insertion now follows the same dependency order as `modules.load.recovery`.
 
-1. Use the exact Evolution X vendor/kernel sources or device configuration where available, rather than assuming the LineageOS Android 16 vendor tree is interchangeable.
-2. Reconcile `vendor_boot` ramdisk contents and recovery kernel-module loading with the Evolution X package.
-3. Reconcile the recovery fstab with the current dynamic partitions and F2FS metadata encryption.
-4. Reconcile VINTF manifests and SELinux policy before attempting a build.
-5. Build the adapted image and inspect its boot/vendor-ramdisk contents before temporary-boot testing it for display, touch, ADB, fastbootd, partition access, and data decryption.
+## Validation boundary
 
-## Important limitation
+The repository validator checks the corrected paths, partition group, encryption flags, input rules, module files and order, init property expansions, USB sideload transition, absence of test-key overrides, and the exact boot image size/header. A successful CI run remains a static result. It cannot certify hardware touch, mouse/OTG, user-data decryption, or host-side sideloading. Those must be tested on the exact phone by temporary boot before any permanent operation.
 
-No public Evolution X Android 17 `fogos` recovery/device source was located in the supplied package or public references. The payload provides compiled images, not the source tree needed to reproduce a fully compatible recovery. The repository therefore records a buildable direction and verified inputs, but does not claim that an Android 17 recovery image can be safely produced from the old TWRP tree alone.
+## References
+
+[1] [AOSP vendor boot partitions](https://source.android.com/docs/core/architecture/partitions/vendor-boot-partitions)
+
+[2] [LineageOS fogos device tree](https://github.com/LineageOS/android_device_motorola_fogos)
+
+[3] [LineageOS SM6375-common board configuration](https://github.com/LineageOS/android_device_motorola_sm6375-common)
+
+[4] [TeamWin fogos device tree](https://github.com/TeamWin/android_device_motorola_fogos)

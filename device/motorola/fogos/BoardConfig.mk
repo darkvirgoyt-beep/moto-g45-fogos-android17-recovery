@@ -35,11 +35,10 @@ TARGET_KERNEL_ARCH := arm64
 BOARD_KERNEL_BASE := 0x00000000
 BOARD_KERNEL_IMAGE_NAME := Image
 BOARD_KERNEL_PAGESIZE := 4096
-# Android 17 uses the separate dtbo partition; no recovery_dtbo is embedded
-# in a header-v3 A/B boot image. The prebuilt-kernel build does not generate a
-# DTBO target, so do not request a recovery DTBO here.
+BOARD_KERNEL_SEPARATED_DTBO := true
 BOARD_BOOT_HEADER_VERSION := 3
 BOARD_RAMDISK_USE_LZ4 := true
+TARGET_KERNEL_NO_GCC := true
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
 BOARD_KERNEL_CMDLINE += androidboot.hab.product=fogos
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/Image
@@ -69,17 +68,19 @@ TARGET_USERIMAGES_USE_F2FS := true
 BOARD_BUILD_SYSTEM_ROOT_IMAGE := false
 
 BOARD_SUPER_PARTITION_SIZE := 5905580032
-BOARD_SUPER_PARTITION_GROUPS := qti_dynamic_partitions
-BOARD_QTI_DYNAMIC_PARTITIONS_SIZE := 5901385728 # BOARD_SUPER_PARTITION_SIZE/2 - 4MB
-BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := odm product system system_ext vendor
+# Motorola SM6375 uses one logical super group named mot_dp_group. The
+# payload inventory contains product, system, system_ext, and vendor; it does
+# not contain an ODM logical partition.
+BOARD_MOT_DP_GROUP_SIZE := 5901385728 # BOARD_SUPER_PARTITION_SIZE - 4MB
+BOARD_SUPER_PARTITION_GROUPS := mot_dp_group
+BOARD_MOT_DP_GROUP_PARTITION_LIST := product system system_ext vendor
 
 BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := ext4
-BOARD_ODMIMAGE_FILE_SYSTEM_TYPE := ext4
+BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
 TARGET_COPY_OUT_PRODUCT := product
 TARGET_COPY_OUT_SYSTEM_EXT := system_ext
-TARGET_COPY_OUT_ODM := odm
 TARGET_COPY_OUT_VENDOR := vendor
 
 # Props
@@ -99,10 +100,9 @@ BOOT_KERNEL_MODULES := $(FOGOS_RECOVERY_MODULE_NAMES)
 
 # QCOM encryption and decryption
 BOARD_USES_QCOM_FBE_DECRYPTION := true
-PLATFORM_VERSION := 16.1.0
-PLATFORM_VERSION_LAST_STABLE := $(PLATFORM_VERSION)
-PLATFORM_SECURITY_PATCH := 2099-12-31
-VENDOR_SECURITY_PATCH := $(PLATFORM_SECURITY_PATCH)
+# The kernel, vendor-ramdisk modules, fstab, and partition inputs follow the
+# inspected Android 17 / Evolution X 17.0 payload. The TWRP framework version
+# is supplied by the selected manifest and is not relabeled here.
 
 # Recovery
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
@@ -110,8 +110,10 @@ BOARD_HAS_LARGE_FILESYSTEM := true
 BOARD_HAS_NO_SELECT_BUTTON := true
 BOARD_SUPPRESS_SECURE_ERASE := true
 BOARD_USES_RECOVERY_AS_BOOT := true
-# Header-v3 A/B devices keep DTB/DTBO in vendor_boot and the dtbo partition;
-# this TWRP boot image must not request a recovery_dtbo or embedded DTB.
+# Match the maintained fogos recovery packaging. The DTB is carried in the
+# boot image and the recovery DTBO is included using the board convention.
+BOARD_INCLUDE_RECOVERY_DTBO := true
+BOARD_INCLUDE_DTB_IN_BOOTIMG := true
 TARGET_NO_RECOVERY := true
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery.fstab
 TARGET_RECOVERY_DENSITY := hdpi
@@ -167,10 +169,6 @@ TARGET_RECOVERY_DEVICE_MODULES += strace
 RECOVERY_BINARY_SOURCE_FILES += $(TARGET_OUT_EXECUTABLES)/strace
 
 # Verified Boot
-BOARD_AVB_ENABLE := true
-BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
-BOARD_AVB_VBMETA_SYSTEM := system system_ext product
-BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
-BOARD_AVB_VBMETA_SYSTEM_ALGORITHM := SHA256_RSA2048
-BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
-BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX_LOCATION := 1
+# The stock ROM supplies the signed vbmeta/vbmeta_system images. This recovery
+# target must not synthesize a system vbmeta with AOSP test keys or fabricated
+# rollback/security-patch values.

@@ -1,8 +1,10 @@
 name: VirgoYT fogos TWRP build
 
-# Copy this file to .github/workflows/twrp-build-release.yml.
-# The current tree is a TWRP 12.1 baseline; this workflow must not be
-# described as an Android 17 build until an Android 17 TWRP base is supplied.
+# Active workflow for the VirgoYT fogos recovery port.
+# The kernel, vendor-ramdisk modules, fstab, and device inputs are sourced from
+# the inspected Android 17 payload. The known-working TWRP 12.1 manifest is
+# used for a repeatable build; this is not mislabeled as a TWRP 14/Android 17
+# framework build.
 
 on:
   push:
@@ -31,12 +33,12 @@ concurrency:
 env:
   DEVICE_CODENAME: fogos
   BRAND: VirgoYT
-  # This is the checked-in baseline. Do not call its output Android 17.
+  # Known-working manifest branch for this tree; device inputs target Android 17.
   TWRP_MANIFEST_BRANCH: twrp-12.1
 
 jobs:
   build:
-    name: Build fogos recovery baseline
+    name: Build fogos Android 17 recovery candidate
     runs-on: ubuntu-22.04
     timeout-minutes: 360
     permissions:
@@ -122,7 +124,7 @@ jobs:
           magic="$(dd if="$image" bs=1 count=8 2>/dev/null)"
           test "$magic" = 'ANDROID!'
           size="$(stat -c '%s' "$image")"
-          test "$size" -le 100663296
+          test "$size" -eq 100663296
           sha256sum "$image" | tee "$GITHUB_WORKSPACE/fogos-twrp-boot.sha256"
           cp "$image" "$GITHUB_WORKSPACE/virgoyt-fogos-twrp-${GITHUB_SHA}.img"
           {

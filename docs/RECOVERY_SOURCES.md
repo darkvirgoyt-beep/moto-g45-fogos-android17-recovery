@@ -1,25 +1,29 @@
 # Recovery source assessment
 
-## Official TWRP availability
+## Official references
 
-TeamWin has an official download page for `fogos`. The page lists `twrp-3.7.1_12-0-fogos.img` and `twrp-installer-3.7.1_12-0-fogos.zip`, both dated 2024-05-14. The published image is approximately 96 MiB and is associated with the TWRP 12.1-era device tree. It is useful as a historical reference, but it is not evidence of Android 17 compatibility.[1]
+TeamWin publishes an official `fogos` recovery based on the TWRP 12.1-era device tree. That image is a useful historical reference for the Moto G34/G45 family, but it is not evidence of Android 17 compatibility.[1]
 
-The user’s verified Evolution X Android 17 payload has `boot.img` and `vendor_boot.img` sizes of exactly 100,663,296 bytes. This differs from the official TWRP image size and the old source tree’s historical assumptions. The old TWRP image must therefore not be flashed directly onto the user’s current ROM.
+The maintained LineageOS fogos tree and its SM6375-common board configuration provide the modern structural reference: boot header version 3, separated DTBO, DTB in boot, recovery-as-boot, vendor-ramdisk support, Motorola `mot_dp_group`, and the current boot/vendor-boot geometry. They do not certify the user’s unofficial Evolution X Android 17 build.[2] [3]
 
-## Official fogos information
+AOSP documents that header-v3 devices relocate vendor-specific information, including vendor ramdisk and DTB handling, into `vendor_boot`, and that recovery fstab belongs in the vendor-ramdisk first-stage location. The VirgoYT tree follows those packaging rules while using the user-provided fogos payload inputs.[4]
 
-The LineageOS device page identifies the Moto G45 5G as codename `fogos`, describes the recovery and bootloader entry modes, and currently lists LineageOS 23.2 based on Android 16 for supported variants. It does not provide an Android 17 recovery image or claim compatibility with the user’s unofficial Evolution X Android 17 build.[2]
+## VirgoYT adaptation
 
-The LineageOS build guide states that a LineageOS Recovery image can be built from source for the device. This supports using the LineageOS device/vendor/kernel sources as a modern reference, but a LineageOS Android 16 tree still needs to be reconciled with the user’s Android 17 package before it can be used as an Android 17 recovery tree.[3]
+The repository’s current source adaptation includes the inspected fogos Android 17 kernel and recovery modules, Android 17 FBE/wrapped-key metadata, emulated-storage modeling, concrete OTG block-device mapping, early-boot touchscreen module insertion, USB HID/mouse permissions, and an explicit configfs sideload transition. The active workflow builds the image and runs static validation before any artifact can be released.
 
-## Current conclusion
+The audit also removed crossed configuration that had survived earlier builds: the stale QTI dynamic group and nonexistent ODM target, stale API/VNDK values, fabricated platform/security-patch overrides, AOSP test-key vbmeta synthesis, a malformed USB init property expansion, incomplete sideload function cleanup, a stray ueventd comment token, duplicate inactive baseline workflows, and obsolete pre-release documentation.
 
-A supported official TWRP image exists for `fogos`, but no verified Android 17 OrangeFox or TWRP build was found. The project should proceed by comparing the official/LineageOS device sources with the verified Evolution X payload and adapting the recovery configuration. The first artifact should be a temporary-boot test image; no permanent flash should be recommended until display, touch, ADB, partition access, and data decryption are tested on the target device.
+## Certification boundary
+
+The public image remains an unofficial temporary-boot candidate. Static CI can verify source structure, image header/size, module packaging, partition metadata, and init configuration. It cannot press the target screen, connect an OTG mouse, decrypt the user’s existing `/data`, or prove a real host-to-phone ADB sideload. Those are physical acceptance tests and must pass before any permanent flash is considered.
 
 ## References
 
-[1] [TeamWin: TWRP for fogos](https://dl.twrp.me/fogos/)
+[1] [TeamWin fogos device tree](https://github.com/TeamWin/android_device_motorola_fogos)
 
-[2] [LineageOS Wiki: Motorola moto g45 5G (fogos)](https://wiki.lineageos.org/devices/fogos/variant2/)
+[2] [LineageOS fogos device tree](https://github.com/LineageOS/android_device_motorola_fogos)
 
-[3] [LineageOS Wiki: Build for Motorola moto g45 5G](https://wiki.lineageos.org/devices/fogos/build/variant2/)
+[3] [LineageOS SM6375-common board configuration](https://github.com/LineageOS/android_device_motorola_sm6375-common)
+
+[4] [AOSP vendor boot partitions](https://source.android.com/docs/core/architecture/partitions/vendor-boot-partitions)

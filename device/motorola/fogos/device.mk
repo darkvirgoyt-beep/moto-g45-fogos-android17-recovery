@@ -21,7 +21,6 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota/launch_with_ven
 AB_OTA_PARTITIONS += \
     boot \
     dtbo \
-    odm \
     product \
     system \
     system_ext \
@@ -77,9 +76,11 @@ PRODUCT_PACKAGES += \
     qcom_decrypt \
     qcom_decrypt_fbe
 
-# Shipping level
-PRODUCT_SHIPPING_API_LEVEL := 30
-PRODUCT_TARGET_VNDK_VERSION := 30
+# Shipping API level
+# fogos first shipped with Android 14 according to the maintained device tree;
+# keep the recovery product aligned with that vendor interface level.
+PRODUCT_SHIPPING_API_LEVEL := 34
+PRODUCT_TARGET_VNDK_VERSION := 34
 
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += \

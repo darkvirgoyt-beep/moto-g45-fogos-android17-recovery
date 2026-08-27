@@ -21,7 +21,7 @@
 
 </div>
 
-> **Project identity:** This is an **unofficial VirgoYT custom TWRP project** for the Motorola Moto G45 5G, codename `fogos`. The long-term target is a genuinely tested 2026 Android 17 recovery—not an Android 15 build and not a relabeled older image. The currently downloadable file is clearly marked as an older TeamWin baseline, not as a finished VirgoYT Android 17 build.
+> **Project identity:** This is an **unofficial VirgoYT custom TWRP project** for the Motorola Moto G45 5G, codename `fogos`. The repository contains an Android 17-oriented recovery candidate built from the checked-in device tree. It is statically validated, but it remains a temporary-boot candidate until the target phone passes the physical touch, mouse, storage, decryption, ADB, and sideload checks.
 
 ## Device profile
 
@@ -44,64 +44,45 @@ The ROM package was inspected from its signed `payload.bin`; the verified partit
 
 ## Current status
 
-The repository contains an **unofficial custom TWRP development tree** for `fogos`, modern SM6375 board-layout notes, Android 17 porting documentation, a build workflow template, and verified ROM metadata. The downloadable recovery image is an older official TeamWin baseline used as a device reference and temporary-boot test; it is not yet a VirgoYT-built Android 17 image.
+The repository contains the unofficial `fogos` custom-TWRP tree, Android 17 port notes, storage/encryption configuration, touchscreen-module loading, USB mouse/OTG support, ADB/sideload wiring, and a gated GitHub Actions build. The current public artifact is a VirgoYT Android 17 candidate that passed static source and image checks. It is **not hardware-certified or approved for permanent flashing** until the exact Moto G45 passes the physical acceptance checklist.
 
 | Component | Status |
 | --- | --- |
 | Device identity | Verified for Moto G45 5G / `fogos` |
 | Evolution X Android 17 payload | Inspected and documented |
 | VirgoYT branding | Added to this project |
-| TWRP device-tree baseline | Included for adaptation |
-| Android 17 configuration port | Experimental / in progress |
-| Genuine Android 17 recovery image | **Not released yet** |
-| Temporary-boot validation | Required before any permanent flash |
+| `/data` and emulated storage configuration | Patched and statically gated |
+| Touchscreen module packaging/loading | Patched and statically gated |
+| USB mouse/OTG configuration | Preserved and statically gated |
+| ADB/sideload wiring | Present and statically gated; host/device test required |
+| Android 17 recovery image | Built and released as a temporary-boot candidate |
+| Permanent flash | **Blocked until every physical gate passes** |
 | OrangeFox Android 17 build | No verified build identified |
 
-The project deliberately does not call the old 2024 image “Android 17.” A recovery image is considered ready only after it builds from the updated source, passes image validation, and is temporarily boot-tested on the target phone.
+A successful CI build proves source and image invariants only. It cannot certify touchscreen, encryption, mouse, or sideload behavior on a physical phone.
 
-## Downloadable unofficial custom-TWRP baseline
+## Download the Android 17 all-checks candidate
 
-The public release below is labeled **VirgoYT Unofficial Custom TWRP 3.7.1 Baseline** for Moto G45 5G (`fogos`). The image itself is the verified 2024 TeamWin fogos build supplied as a baseline for this unofficial project. It is not a newly compiled VirgoYT Android 17 recovery, and compatibility with the user’s Android 17 ROM is not guaranteed.
+The previously published artifact is **VirgoYT fogos Android 17 TWRP — All Checks**. It predates the current repository audit and is not the repaired candidate. Download only a release explicitly identified as an audit candidate after its CI run passes; every image remains unofficial and must be temporarily boot-tested before any permanent-flash decision.
 
-### [Download VirgoYT Unofficial Custom TWRP 3.7.1 Baseline for fogos](https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/releases/tag/virgoyt-unofficial-custom-twrp-3.7.1-baseline)
-
-| Asset | Link |
-| --- | --- |
-| Recovery image | [twrp-3.7.1_12-0-fogos.img](https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/releases/download/virgoyt-unofficial-custom-twrp-3.7.1-baseline/twrp-3.7.1_12-0-fogos.img) |
-| SHA-256 file | [twrp-3.7.1_12-0-fogos.img.sha256](https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/releases/download/virgoyt-unofficial-custom-twrp-3.7.1-baseline/twrp-3.7.1_12-0-fogos.img.sha256) |
-| Temporary-boot guide | [TEMPORARY_BOOT.md](https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/releases/download/virgoyt-unofficial-custom-twrp-3.7.1-baseline/TEMPORARY_BOOT.md) |
-| Release notes | [VIRGOYT_UNOFFICIAL_CUSTOM_TWRP_RELEASE_NOTES.md](https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/releases/download/virgoyt-unofficial-custom-twrp-3.7.1-baseline/VIRGOYT_UNOFFICIAL_CUSTOM_TWRP_RELEASE_NOTES.md) |
-
-Verified SHA-256:
-
-```text
-498690b6c4b510deefd94b054a731f977f159aab17952106cd45f80ce0bcc373
-```
-
-This is an `.img` file, not an APK. For a temporary test from the bootloader, use `fastboot boot`; do not permanently flash this baseline to `boot`, `boot_a`, `boot_b`, or `vendor_boot`.
+### [Download VirgoYT fogos Android 17 All-Checks Recovery](https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/releases/tag/virgoyt-fogos-twrp-android17-all-checks-0ae4ebe)
 
 ```bash
 fastboot devices
-fastboot boot twrp-3.7.1_12-0-fogos.img
+fastboot boot virgoyt-fogos-twrp-0ae4ebe455b511cda30aff7709d6514710b64b9d.img
 ```
 
-## Build direction
+This is an `.img` file, not an APK. Verify its SHA-256 from the release asset before booting. Do not permanently flash it until the physical checklist passes. Never use Format Data or Wipe Data as a troubleshooting shortcut.
 
-The Android 17 port is being aligned with the modern SM6375 configuration used by the current `fogos` device sources. The relevant board settings include a 100,663,296-byte boot partition, a 100,663,296-byte vendor-boot partition, recovery-as-boot, recovery DTBO, DTB in boot, vendor ramdisk support, A/B partitions, metadata, and logical `system`, `system_ext`, `product`, and `vendor` partitions.
+## Build and validation direction
 
-The old TWRP tree cannot be treated as complete Android 17 support. It must be adapted to the current vendor ramdisk, kernel modules, fstab, encryption behavior, SELinux policy, and recovery boot header. The detailed worklist is in [`docs/ANDROID17_PORT_NOTES.md`](docs/ANDROID17_PORT_NOTES.md), while the safe build and temporary-boot policy is in [`docs/BUILD_AND_TEST.md`](docs/BUILD_AND_TEST.md).
+The Android 17 tree is aligned with the maintained SM6375/fogos layout and the inspected Evolution X payload: 100,663,296-byte boot and vendor-boot partitions, header version 3, recovery-as-boot, A/B slots, metadata, logical dynamic partitions, FBE/wrapped-key userdata, Android 17 vendor-ramdisk modules, and concrete OTG storage mapping.
 
-A first experimental adaptation is now in the source tree: it reuses the exact Evolution X Android 17 fogos kernel, enables the vendor-ramdisk recovery path, adds official recovery module ordering, and places `fstab.qcom` in the first-stage vendor ramdisk. **No candidate image has passed a build or phone test yet**, so the old baseline release remains the only downloadable image and is not Android 17-compatible.
+The active workflow is [`.github/workflows/twrp-build-release.yml`](.github/workflows/twrp-build-release.yml). It runs the repository validator before artifact upload and keeps release creation behind an explicit manual input. Static gates cannot certify a physical phone, so the release remains temporary-boot only until the target-device checklist passes.
 
 ## Automation
 
-The corrected **custom-TWRP build workflow template** is stored at [`ci/twrp-build-release.yml`](ci/twrp-build-release.yml). GitHub only executes workflow files located under `.github/workflows/`, so this template must be copied to:
-
-```text
-.github/workflows/twrp-build-release.yml
-```
-
-The intended automation builds on pushes and pull requests, records build metadata, validates the generated Android boot image, uploads artifacts, and keeps release creation separately gated. A release must never be created merely because a file exists; it should be published only after a successful build and validation pass.
+GitHub Actions builds the checked-in device tree, packages the Android 17 recovery image and modules, validates the boot header and size, checks storage/input/ADB invariants, writes SHA-256 metadata, and optionally publishes a public candidate. It must never flash a device or erase user data.
 
 ## Safe testing policy
 
@@ -113,15 +94,16 @@ Do not relock the bootloader while a custom ROM is installed. Do not use an imag
 
 | Path | Purpose |
 | --- | --- |
-| `device/motorola/fogos/` | Unofficial fogos custom-TWRP baseline and device configuration |
+| `device/motorola/fogos/` | VirgoYT fogos Android 17 recovery device tree |
+| `.github/workflows/twrp-build-release.yml` | Active build, validation, and manually gated release workflow |
+| `tools/validate_fogos_recovery.py` | Static storage, input, OTG, sideload, and image validator |
 | `docs/ROM_INPUT.md` | Verified Evolution X payload details and image sizes |
 | `docs/RECOVERY_SOURCES.md` | Official TWRP and LineageOS source assessment |
-| `docs/ANDROID17_PORT_NOTES.md` | Android 17 board and recovery porting worklist |
-| `docs/BUILD_AND_TEST.md` | Reproducible build and temporary-boot procedure |
-| `docs/MAGISK_ROOT_TROUBLESHOOTING.md` | Verified Magisk findings and safe root test sequence |
-| `docs/TWRP_STORAGE_SIDELOAD_FIX.md` | Android 17 data-media, encryption, USB-OTG, and sideload fixes |
+| `docs/ANDROID17_PORT_NOTES.md` | Android 17 board and recovery porting notes |
+| `docs/BUILD_AND_TEST.md` | Reproducible build and no-wipe temporary-boot procedure |
+| `docs/MAGISK_ROOT_TROUBLESHOOTING.md` | Separate Magisk root investigation |
+| `docs/TWRP_STORAGE_SIDELOAD_FIX.md` | Data-media, encryption, OTG, and sideload fixes |
 | `docs/assets/virgoyt-banner.jpg` | VirgoYT project branding image |
-| `ci/twrp-build-release.yml` | Workflow template for manual activation |
 
 ## References
 

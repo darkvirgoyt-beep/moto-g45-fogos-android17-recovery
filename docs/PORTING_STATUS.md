@@ -1,28 +1,39 @@
 # Android 17 porting status
 
-## Baseline
+## Target and evidence
 
-The repository currently contains the public `fogos` TWRP device tree as a baseline under `device/motorola/fogos`. The baseline is derived from the TeamWin repository at commit `5851454778947504335184ef0559903acbd69e71`, dated 2024-05-09, and targets the TWRP 12.1 build system.
+This repository targets the Motorola Moto G45 5G, codename `fogos`, running the user-provided Evolution X 17.0 package `EvolutionX-17.0-20260812-fogos-12.1-Unofficial`. The ROM input record is maintained in [`ROM_INPUT.md`](ROM_INPUT.md). It records a version-2 `payload.bin`, `boot.img`, `vendor_boot.img`, `dtbo.img`, `vbmeta.img`, and `vbmeta_system.img`; no `init_boot` image was found in that payload.
 
-The baseline is not being represented as an Android 17 recovery. It is a starting point for comparison only. Its configuration includes a 96 MiB `boot` image, a 96 MiB `init_boot` size, a 96 MiB `vendor_boot` size, A/B partitions, QCOM FBE settings, and recovery-as-boot settings. These values must be checked against the user's exact Android 17 payload before they are reused.
+The checked-in recovery tree uses the inspected boot header and partition geometry: 4 KiB pages, header version 3, 100,663,296-byte boot and vendor-boot partitions, a 25,165,824-byte DTBO partition, A/B slots, recovery-as-boot, vendor-ramdisk support, metadata, and logical system partitions. The kernel and recovery module set are taken from the inspected fogos Android 17 payload record.
 
-## Current evidence from the user's device
+## Corrected source areas
 
-The device reports Android 17 and build `CPRA.260605.016`. The extracted Evolution X payload contains `boot.img` and `vendor_boot.img`, and Magisk successfully patched `boot.img`. Fastboot reported `OKAY` for sending and writing the patched image to `boot_b`. Termux nevertheless reports that `su` cannot obtain root. This indicates that the recovery project and the Magisk investigation are related but not yet proven to have the same boot-image requirements.
+| Area | Repository state |
+| --- | --- |
+| Dynamic partitions | Uses Motorola `mot_dp_group` with the verified logical partition list; the stale QTI group and nonexistent ODM target were removed. |
+| `/data` | Uses the fogos userdata block device, F2FS, inline AES-256 encryption, wrapped-key v2 metadata, and the metadata key directory. |
+| Emulated storage | `RECOVERY_SDCARD_ON_DATA := true` and TWRP `storage;settingsstorage` flags expose `/data/media/0` after successful decryption. |
+| USB-OTG | Uses the concrete `/dev/block/sdg1` partition and `/dev/block/sdg` parent instead of wildcard removable-storage aliases. |
+| Touchscreen | The Android 17 module files, dependency metadata, and dependency-ordered early-boot insertion are packaged under `/lib/modules`. |
+| Mouse/HID | Input event, mouse, and USB HID paths remain enabled; the touchscreen patch does not remove mouse fallback. |
+| ADB/sideload | `adbd`, `minadbd`/sideload support, FunctionFS ADB, and the sideload gadget transition are retained and statically gated. |
+| Runtime syntax | The malformed USB property expansion and stray ueventd comment token were removed. |
+| Signing | Fabricated security-patch overrides and AOSP test-key vbmeta synthesis were removed; stock signed vbmeta images remain outside this recovery build. |
 
-## Required inputs before an Android 17 build
+## Release status
 
-The following must be verified from the exact ROM package currently installed:
+The current public artifact is an **unofficial Android 17 recovery candidate**, not a hardware-certified or permanently flashable image. GitHub Actions validates source invariants, image header, exact image size, checksum, module packaging, storage metadata, input permissions, and sideload wiring. CI cannot press the phone’s screen, decrypt the user’s installed `/data`, connect a real OTG mouse, or complete a host sideload session.
 
-1. The complete ROM filename, download URL, maintainer, and checksum.
-2. `ro.product.model`, `ro.product.device`, `ro.boot.hardware`, `ro.build.version.incremental`, and `ro.build.version.security_patch`.
-3. The extracted `boot.img`, `vendor_boot.img`, `vbmeta.img`, and `dtbo.img` provenance and SHA-256 checksums.
-4. The kernel source or a matching kernel configuration and module set.
-5. Whether the ROM expects recovery-as-boot, a vendor-boot recovery ramdisk, or the stock/ROM recovery image.
-6. Whether the current recovery can mount and decrypt `/data`, expose ADB, and sideload the original ROM ZIP.
+## Required physical acceptance
 
-## Safe test order
+The target phone must be temporarily booted with the exact candidate. Finger touch, USB mouse/OTG, `/data` decryption using the existing credential, non-zero Internal Storage, `/data/media/0`, external OTG storage, normal ADB, ADB sideload, ZIP installation, clean reboot, and data preservation must all pass. If any check fails, remain on temporary boot, preserve recovery logs and the build tag, and do not permanently flash or erase user data.
 
-The first test for any new recovery artifact must be a temporary boot from the bootloader. The artifact must not be flashed to a permanent partition until it boots, the screen and touch work, ADB is available, and the recovery behavior is understood. Keep the original boot, vendor-boot, vbmeta, and dtbo images outside the repository as recovery material.
+## References
 
-No experimental Android 17 image is currently flash-ready. No claim of OrangeFox compatibility is made by this repository.
+[1] [Android vendor boot partitions](https://source.android.com/docs/core/architecture/partitions/vendor-boot-partitions)
+
+[2] [LineageOS fogos device tree](https://github.com/LineageOS/android_device_motorola_fogos)
+
+[3] [TeamWin fogos device tree](https://github.com/TeamWin/android_device_motorola_fogos)
+
+[4] [VirgoYT fogos recovery releases](https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/releases)

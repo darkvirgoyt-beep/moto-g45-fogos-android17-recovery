@@ -30,8 +30,9 @@ import /init.recovery.qcom_decrypt.rc
 on early-init
     # The fogos Android 17 vendor ramdisk publishes its touchscreen drivers
     # under /lib/modules, but recovery does not reliably auto-load them from
-    # the copied metadata alone. Insert dependencies first, then both panel
-    # controller drivers. This does not touch USB HID or mouse input.
+    # the copied metadata alone. Raw insmod has no dependency resolver, so
+    # mmi_annotate must precede its mmi_info dependent. This does not touch
+    # USB HID or mouse input.
     insmod /lib/modules/mmi_annotate.ko
     insmod /lib/modules/mmi_info.ko
     insmod /lib/modules/sensors_class.ko

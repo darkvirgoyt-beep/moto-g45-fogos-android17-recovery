@@ -188,7 +188,7 @@ for needle in (
     "BOARD_DTBOIMG_PARTITION_SIZE := 25165824",
     "BOARD_USES_RECOVERY_AS_BOOT := true",
     "BOARD_BUILD_VENDOR_RAMDISK_IMAGE := true",
-    "TARGET_RECOVERY_DEVICE_DIRS := $(DEVICE_PATH)",
+    "TARGET_RECOVERY_DEVICE_DIRS += $(DEVICE_PATH)",
     "BOARD_VENDOR_RAMDISK_KERNEL_MODULES := $(FOGOS_RECOVERY_MODULE_FILES)",
 ):
     require(board, needle, "BoardConfig.mk")
@@ -216,6 +216,9 @@ require(flags, "/dev/block/sdg        ", "twrp.flags")
 require(device_mk, "update_engine_sideload", "device.mk")
 require(device_mk, "$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom", "device.mk")
 require(device_mk, "$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom", "device.mk")
+require(device_mk, "recovery/root/init.recovery.qcom.rc:$(TARGET_COPY_OUT_ROOT)/init.recovery.qcom.rc", "device.mk")
+require(device_mk, "recovery/root/init.recovery.usb.rc:$(TARGET_COPY_OUT_ROOT)/init.recovery.usb.rc", "device.mk")
+require(device_mk, "recovery/root/vendor/ueventd.rc:$(TARGET_COPY_OUT_ROOT)/vendor/ueventd.rc", "device.mk")
 require(device_mk, "PRODUCT_SHIPPING_API_LEVEL := 34", "device.mk")
 require(device_mk, "PRODUCT_TARGET_VNDK_VERSION := 34", "device.mk")
 for stale in ("TARGET_COPY_OUT_ODM", "PRODUCT_SHIPPING_API_LEVEL := 30", "PRODUCT_TARGET_VNDK_VERSION := 30", "    odm "):

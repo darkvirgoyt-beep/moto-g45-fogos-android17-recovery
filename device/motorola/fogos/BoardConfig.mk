@@ -109,7 +109,7 @@ BOARD_USES_QCOM_FBE_DECRYPTION := true
 # Recovery
 # TeamWin copies this directory into TARGET_RECOVERY_OUT. Without this hook,
 # files under recovery/root are silently absent from the booted image.
-TARGET_RECOVERY_DEVICE_DIRS := $(DEVICE_PATH)
+TARGET_RECOVERY_DEVICE_DIRS += $(DEVICE_PATH)
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 BOARD_HAS_LARGE_FILESYSTEM := true
 BOARD_HAS_NO_SELECT_BUTTON := true

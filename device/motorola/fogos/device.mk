@@ -91,6 +91,15 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery.fstab:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom \
     $(LOCAL_PATH)/recovery.fstab:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom
 
+# Force the audited device rules into the generic recovery root. The TeamWin
+# recovery-root hook also copies recovery/root, but these explicit entries make
+# the intended staging destination unambiguous and prevent generic init files
+# from replacing the corrected USB/touch/input rules.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/recovery/root/init.recovery.qcom.rc:$(TARGET_COPY_OUT_ROOT)/init.recovery.qcom.rc \
+    $(LOCAL_PATH)/recovery/root/init.recovery.usb.rc:$(TARGET_COPY_OUT_ROOT)/init.recovery.usb.rc \
+    $(LOCAL_PATH)/recovery/root/vendor/ueventd.rc:$(TARGET_COPY_OUT_ROOT)/vendor/ueventd.rc
+
 # The BoardConfig declares the exact Android 17 module source paths and the
 # recovery load list. TeamWin then runs depmod and places the result in the
 # canonical vendor-ramdisk/recovery module directories. USB HID and mouse input

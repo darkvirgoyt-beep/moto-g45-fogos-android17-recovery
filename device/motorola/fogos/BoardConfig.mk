@@ -92,9 +92,11 @@ TARGET_VENDOR_PROP += $(DEVICE_PATH)/vendor.prop
 # seven modules extracted from the Android 17 vendor_boot are packaged; the
 # remaining checked-in modules belong to the older baseline kernel.
 FOGOS_RECOVERY_MODULE_NAMES := $(strip $(shell cat $(DEVICE_PATH)/modules.load.recovery))
-# Follow the current SM6375/fogos build pattern: module filenames are load
-# metadata, not C/C++ source inputs. The custom TW_LOAD_VENDOR_MODULES macro
-# is intentionally omitted because it expands raw .ko names into clang flags.
+FOGOS_RECOVERY_MODULE_FILES := $(foreach module,$(FOGOS_RECOVERY_MODULE_NAMES),$(DEVICE_PATH)/prebuilt/modules/$(module))
+# Module filenames are the load list; the corresponding absolute paths are the
+# module sources. This is the TeamWin build-system contract and avoids sending
+# raw .ko filenames into compiler flags.
+BOARD_VENDOR_RAMDISK_KERNEL_MODULES := $(FOGOS_RECOVERY_MODULE_FILES)
 BOARD_VENDOR_RAMDISK_RECOVERY_KERNEL_MODULES_LOAD := $(FOGOS_RECOVERY_MODULE_NAMES)
 BOOT_KERNEL_MODULES := $(FOGOS_RECOVERY_MODULE_NAMES)
 
@@ -105,6 +107,9 @@ BOARD_USES_QCOM_FBE_DECRYPTION := true
 # is supplied by the selected manifest and is not relabeled here.
 
 # Recovery
+# TeamWin copies this directory into TARGET_RECOVERY_OUT. Without this hook,
+# files under recovery/root are silently absent from the booted image.
+TARGET_RECOVERY_DEVICE_DIRS := $(DEVICE_PATH)
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 BOARD_HAS_LARGE_FILESYSTEM := true
 BOARD_HAS_NO_SELECT_BUTTON := true

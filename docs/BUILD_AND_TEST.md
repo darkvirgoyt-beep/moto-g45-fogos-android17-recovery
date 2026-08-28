@@ -6,7 +6,7 @@ This repository builds an unofficial Motorola Moto G45 5G (`fogos`) recovery can
 
 ## Reproducible build
 
-The active workflow is `.github/workflows/twrp-build-release.yml`. It checks out the device tree, initializes the pinned TWRP `twrp-12.1` manifest branch, copies the fogos tree, builds `bootimage` and `adbd`, runs `tools/validate_fogos_recovery.py`, records SHA-256 metadata, and uploads the image as an artifact. A public release is created only by an explicit manual dispatch after the build job passes. The workflow never flashes a phone or erases userdata.
+The active workflow is `.github/workflows/twrp-build-release.yml`. It checks out the device tree, initializes the pinned TWRP `twrp-12.1` manifest branch, copies the fogos tree, builds `bootimage` and `adbd`, runs `tools/validate_fogos_recovery.py`, records SHA-256 metadata, and uploads the image as an artifact. To create a direct-download release, open **Actions → VirgoYT fogos TWRP build → Run workflow**, leave **Publish a direct-download GitHub Release** enabled, and choose a unique release tag. After the build passes, open the repository’s **Releases** page and download the `.img`, `.sha256`, and build-info files from that release; the release asset is not the temporary Actions artifact ZIP. The workflow never flashes a phone or erases userdata.
 
 For a local build, use the same manifest and product target as the workflow, then run the validator against the generated image:
 

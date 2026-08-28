@@ -16,12 +16,12 @@ on:
   workflow_dispatch:
     inputs:
       publish_release:
-        description: Publish a Release after a successful validated build
+        description: Publish a direct-download GitHub Release after a successful validated build
         required: true
-        default: false
+        default: true
         type: boolean
       release_tag:
-        description: Release tag used only when publishing manually
+        description: Release tag used for the direct-download release
         required: false
         default: virgoyt-fogos-twrp-test
         type: string

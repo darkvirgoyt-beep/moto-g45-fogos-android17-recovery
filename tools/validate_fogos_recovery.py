@@ -178,6 +178,7 @@ init_usb = read("device/motorola/fogos/recovery/root/init.recovery.usb.rc")
 ueventd = read("device/motorola/fogos/recovery/root/vendor/ueventd.rc")
 workflow = read(".github/workflows/twrp-build-release.yml")
 modules_load = read("device/motorola/fogos/modules.load.recovery")
+prebuilt_modules_load = read("device/motorola/fogos/prebuilt/modules/modules.load.recovery")
 modules_dep = read("device/motorola/fogos/prebuilt/modules/modules.dep")
 
 # Boot, recovery, and Android 17 payload invariants.
@@ -250,6 +251,9 @@ check_no_stray_comment_tokens(init_qcom, "init.recovery.qcom.rc")
 modules = [line.strip() for line in modules_load.splitlines() if line.strip() and not line.startswith("#")]
 if modules != EXPECTED_MODULES:
     raise AssertionError(f"modules.load.recovery drifted: {modules}")
+prebuilt_modules = [line.strip() for line in prebuilt_modules_load.splitlines() if line.strip() and not line.startswith("#")]
+if prebuilt_modules != EXPECTED_MODULES:
+    raise AssertionError(f"prebuilt modules.load.recovery drifted: {prebuilt_modules}")
 for module in modules:
     if not (DEVICE / "prebuilt/modules" / module).is_file():
         raise AssertionError(f"missing recovery module: {module}")

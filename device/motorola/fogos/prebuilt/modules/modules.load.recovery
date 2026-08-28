@@ -1,5 +1,5 @@
-mmi_info.ko
 mmi_annotate.ko
+mmi_info.ko
 sensors_class.ko
 exfat.ko
 mmi-smbcharger-iio.ko

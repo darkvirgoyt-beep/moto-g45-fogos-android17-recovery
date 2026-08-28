@@ -104,8 +104,9 @@ jobs:
         working-directory: twrp-source
         shell: bash
         run: |
-          # AOSP envsetup references TOP while it initializes; strict -u must
-          # be enabled only after envsetup and lunch have completed.
+          # TWRP/AOSP envsetup and mka intentionally read some unset helper
+          # variables while rebuilding the variable cache, so strict -u is not
+          # compatible with this manifest branch.
           set -eo pipefail
           test -f build/envsetup.sh
           source build/envsetup.sh
@@ -114,7 +115,6 @@ jobs:
           # before any build can continue.
           expected_tree_sha="$(sha256sum "$GITHUB_WORKSPACE/device/motorola/fogos/BoardConfig.mk" | cut -d ' ' -f1)"
           lunch twrp_fogos-eng
-          set -u
           test "$(get_build_var TARGET_PRODUCT)" = twrp_fogos
           test "$(get_build_var TARGET_DEVICE)" = fogos
           test "$(sha256sum device/motorola/fogos/BoardConfig.mk | cut -d ' ' -f1)" = "$expected_tree_sha"

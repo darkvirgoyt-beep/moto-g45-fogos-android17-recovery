@@ -50,8 +50,10 @@ PRODUCT_PACKAGES += \
     android.hardware.boot@1.1-impl-qti.recovery \
     bootctrl.holi.recovery
 
-# Update engine
+# Recovery sideload stack. minadbd owns the FunctionFS ADB endpoints while
+# update_engine_sideload performs the recovery-side package verification/install.
 PRODUCT_PACKAGES += \
+    minadbd \
     update_engine \
     update_engine_sideload \
     update_verifier

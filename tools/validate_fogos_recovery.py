@@ -140,13 +140,15 @@ def validate_image(image: Path) -> None:
     ueventd = entries["vendor/ueventd.rc"].decode(errors="replace")
     fstab = entries["system/etc/recovery.fstab"].decode(errors="replace")
     flags = entries["system/etc/twrp.flags"].decode(errors="replace")
+    if "system/bin/minadbd" not in entries:
+        raise AssertionError("image ramdisk is missing system/bin/minadbd")
     for module in EXPECTED_MODULES:
         path = f"vendor/lib/modules/1.1/{module}"
         if path not in entries:
             raise AssertionError(f"image ramdisk is missing {path}")
         require(qcom, f"insmod /vendor/lib/modules/1.1/{module}", "packaged init.recovery.qcom.rc")
     require(qcom, "insmod /vendor/lib/modules/1.1/mmi_annotate.ko\n    insmod /vendor/lib/modules/1.1/mmi_info.ko", "packaged init.recovery.qcom.rc")
-    require(usb, "write /config/usb_gadget/g1/UDC \"none\"", "packaged init.recovery.usb.rc")
+    require(usb, "stop adbd\n    write /config/usb_gadget/g1/UDC \"none\"", "packaged init.recovery.usb.rc")
     require(usb, "rm /config/usb_gadget/g1/configs/b.1/f1", "packaged init.recovery.usb.rc")
     require(usb, "rm /config/usb_gadget/g1/configs/b.1/f2", "packaged init.recovery.usb.rc")
     require(usb, "rm /config/usb_gadget/g1/configs/b.1/f3", "packaged init.recovery.usb.rc")
@@ -213,6 +215,7 @@ require(flags, "/usb-otg               vfat", "twrp.flags")
 require(flags, "/dev/block/sdg        ", "twrp.flags")
 
 # Product and runtime packaging invariants.
+require(device_mk, "minadbd", "device.mk")
 require(device_mk, "update_engine_sideload", "device.mk")
 require(device_mk, "$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom", "device.mk")
 require(device_mk, "$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom", "device.mk")
@@ -231,6 +234,7 @@ for number, line in enumerate(device_mk.splitlines(), 1):
 
 # Init/ueventd syntax and user-requested input/USB behavior.
 require(init_usb, "sys.usb.config=sideload", "init.recovery.usb.rc")
+require(init_usb, "stop adbd", "init.recovery.usb.rc")
 require(init_usb, "ffs.adb", "init.recovery.usb.rc")
 require(init_usb, "write /config/usb_gadget/g1/UDC \"none\"", "init.recovery.usb.rc")
 require(init_usb, "rm /config/usb_gadget/g1/configs/b.1/f1", "init.recovery.usb.rc")

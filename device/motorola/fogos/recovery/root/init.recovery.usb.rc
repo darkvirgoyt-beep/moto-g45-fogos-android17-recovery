@@ -95,6 +95,9 @@ on property:sys.usb.ffs.ready=1 && property:sys.usb.config=adb && property:sys.u
     setprop sys.usb.state ${sys.usb.config}
 
 on property:sys.usb.ffs.ready=1 && property:sys.usb.config=sideload && property:sys.usb.configfs=1
+    # minadbd must exclusively own ffs.adb during sideload; release normal adbd
+    # before disconnecting and rebuilding the gadget configuration.
+    stop adbd
     write /config/usb_gadget/g1/UDC "none"
     rm /config/usb_gadget/g1/configs/b.1/f1
     rm /config/usb_gadget/g1/configs/b.1/f2

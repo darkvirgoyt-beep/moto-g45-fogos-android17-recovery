@@ -219,6 +219,10 @@ require(device_mk, "$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom", "device.mk")
 require(device_mk, "recovery/root/init.recovery.qcom.rc:recovery/root/init.recovery.qcom.rc", "device.mk")
 require(device_mk, "recovery/root/init.recovery.usb.rc:recovery/root/init.recovery.usb.rc", "device.mk")
 require(device_mk, "recovery/root/vendor/ueventd.rc:recovery/root/vendor/ueventd.rc", "device.mk")
+for module in EXPECTED_MODULES:
+    require(device_mk, f"prebuilt/modules/{module}:recovery/root/vendor/lib/modules/1.1/{module}", "device.mk")
+for metadata in ("modules.dep", "modules.alias", "modules.softdep", "modules.load.recovery"):
+    require(device_mk, f"prebuilt/modules/{metadata}:recovery/root/vendor/lib/modules/1.1/{metadata}", "device.mk")
 for stale in ("TARGET_COPY_OUT_ODM", "    odm "):
     forbid(device_mk, stale, "device.mk")
 for number, line in enumerate(device_mk.splitlines(), 1):

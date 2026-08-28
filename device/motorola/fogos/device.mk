@@ -101,7 +101,19 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/init.recovery.usb.rc:recovery/root/init.recovery.usb.rc \
     $(LOCAL_PATH)/recovery/root/vendor/ueventd.rc:recovery/root/vendor/ueventd.rc
 
-# The BoardConfig declares the exact Android 17 module source paths and the
-# recovery load list. TeamWin then runs depmod and places the result in the
-# canonical vendor-ramdisk/recovery module directories. USB HID and mouse input
-# remain independent of this touchscreen module list.
+# Explicit recovery-root module copies are required for this standalone boot
+# image. The vendor-ramdisk module variables above are retained for normal
+# Android packaging, but TWRP 12.1 can omit them when only bootimage is built.
+# Keep the module metadata beside the binaries and preserve USB HID/mouse input.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/prebuilt/modules/mmi_info.ko:recovery/root/vendor/lib/modules/1.1/mmi_info.ko \
+    $(LOCAL_PATH)/prebuilt/modules/mmi_annotate.ko:recovery/root/vendor/lib/modules/1.1/mmi_annotate.ko \
+    $(LOCAL_PATH)/prebuilt/modules/sensors_class.ko:recovery/root/vendor/lib/modules/1.1/sensors_class.ko \
+    $(LOCAL_PATH)/prebuilt/modules/exfat.ko:recovery/root/vendor/lib/modules/1.1/exfat.ko \
+    $(LOCAL_PATH)/prebuilt/modules/mmi-smbcharger-iio.ko:recovery/root/vendor/lib/modules/1.1/mmi-smbcharger-iio.ko \
+    $(LOCAL_PATH)/prebuilt/modules/chipone_tddi_v2_mmi.ko:recovery/root/vendor/lib/modules/1.1/chipone_tddi_v2_mmi.ko \
+    $(LOCAL_PATH)/prebuilt/modules/ilitek_v3_mmi.ko:recovery/root/vendor/lib/modules/1.1/ilitek_v3_mmi.ko \
+    $(LOCAL_PATH)/prebuilt/modules/modules.dep:recovery/root/vendor/lib/modules/1.1/modules.dep \
+    $(LOCAL_PATH)/prebuilt/modules/modules.alias:recovery/root/vendor/lib/modules/1.1/modules.alias \
+    $(LOCAL_PATH)/prebuilt/modules/modules.softdep:recovery/root/vendor/lib/modules/1.1/modules.softdep \
+    $(LOCAL_PATH)/prebuilt/modules/modules.load.recovery:recovery/root/vendor/lib/modules/1.1/modules.load.recovery

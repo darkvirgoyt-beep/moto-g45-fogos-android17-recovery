@@ -129,7 +129,11 @@ jobs:
           set -euo pipefail
           image="out/target/product/fogos/boot.img"
           test -s "$image"
-          python3 "$GITHUB_WORKSPACE/tools/validate_fogos_recovery.py" "$image"
+          set +e
+          python3 "$GITHUB_WORKSPACE/tools/validate_fogos_recovery.py" "$image" 2>&1 | tee "$GITHUB_WORKSPACE/fogos-validator.log"
+          validator_rc="${PIPESTATUS[0]}"
+          set -e
+          test "$validator_rc" -eq 0
           magic="$(dd if="$image" bs=1 count=8 2>/dev/null)"
           test "$magic" = 'ANDROID!'
           size="$(stat -c '%s' "$image")"
@@ -150,6 +154,51 @@ jobs:
             printf 'hardware_validation_required=true\n'
             printf 'android17_verified=false\n'
           } | tee "$GITHUB_WORKSPACE/fogos-twrp-build-info.txt"
+
+      - name: Collect build diagnostics
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set +e
+          build_root="$GITHUB_WORKSPACE/twrp-source"
+          if [ -d "$build_root" ]; then cd "$build_root"; fi
+          debug="$GITHUB_WORKSPACE/fogos-build-debug"
+          rm -rf "$debug"
+          mkdir -p "$debug/staging" "$debug/manifests" "$debug/image"
+          printf 'run=%s\ncommit=%s\n' "$GITHUB_RUN_ID" "$GITHUB_SHA" > "$debug/run-info.txt"
+          find out/target/product/fogos -maxdepth 5 -type f -printf '%p %s bytes\n' 2>/dev/null | sort > "$debug/manifests/product-files.txt"
+          find out/target/product/fogos -type f \( -iname '*installed-files*' -o -path '*/modules*' -o -name 'ramdisk*' \) -print 2>/dev/null | sort > "$debug/manifests/relevant-files.txt"
+          for file in \
+            out/target/product/fogos/boot.img \
+            out/target/product/fogos/vendor_boot.img \
+            out/target/product/fogos/ramdisk.img \
+            out/target/product/fogos/vendor_ramdisk.img; do
+            if [ -f "$file" ]; then cp -a "$file" "$debug/image/"; fi
+          done
+          for dir in \
+            out/target/product/fogos/recovery/root \
+            out/target/product/fogos/vendor_ramdisk \
+            out/target/product/fogos/root \
+            out/target/product/fogos/obj/PACKAGING/recovery_ramdisk_intermediates \
+            out/target/product/fogos/obj/PACKAGING/vendor_ramdisk_intermediates \
+            out/target/product/fogos/obj/PACKAGING/boot_intermediates; do
+            if [ -d "$dir" ]; then
+              name="$(printf '%s' "$dir" | tr '/ ' '__')"
+              cp -a "$dir" "$debug/staging/$name"
+            fi
+          done
+          find out/target/product/fogos -type f \( -name 'modules.load*' -o -name 'modules.dep*' -o -name 'modules.alias*' -o -name 'modules.softdep*' \) -exec sh -c 'for f do printf "--- %s ---\\n" "$f"; cat "$f"; done' sh {} + > "$debug/manifests/module-metadata.txt" 2>/dev/null
+          cp -a "$GITHUB_WORKSPACE/fogos-validator.log" "$debug/" 2>/dev/null
+          find "$debug" -maxdepth 6 -type f -printf '%p %s bytes\n' | sort > "$debug/manifest.txt"
+
+      - name: Upload build diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: fogos-build-debug-${{ github.run_id }}
+          if-no-files-found: warn
+          retention-days: 7
+          path: fogos-build-debug
 
       - name: Upload validated artifact
         uses: actions/upload-artifact@v4

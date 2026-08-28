@@ -184,7 +184,17 @@ jobs:
             out/target/product/fogos/obj/PACKAGING/boot_intermediates; do
             if [ -d "$dir" ]; then
               name="$(printf '%s' "$dir" | tr '/ ' '__')"
-              cp -a "$dir" "$debug/staging/$name"
+              find "$dir" -xdev -type f -readable -print 2>/dev/null | sort > "$debug/manifests/${name}.files"
+              while IFS= read -r file; do
+                rel="${file#"$dir"/}"
+                case "$rel" in
+                  init.recovery.qcom.rc|init.recovery.usb.rc|vendor/ueventd.rc|system/etc/recovery.fstab|system/etc/twrp.flags|vendor/lib/modules/1.1/*|lib/modules/*|modules.load*|modules.dep*|modules.alias*|modules.softdep*)
+                    dest="$debug/staging/$name/$rel"
+                    mkdir -p "$(dirname "$dest")"
+                    cp -p "$file" "$dest" 2>/dev/null || true
+                    ;;
+                esac
+              done < "$debug/manifests/${name}.files"
             fi
           done
           find out/target/product/fogos -type f \( -name 'modules.load*' -o -name 'modules.dep*' -o -name 'modules.alias*' -o -name 'modules.softdep*' \) -exec sh -c 'for f do printf "--- %s ---\\n" "$f"; cat "$f"; done' sh {} + > "$debug/manifests/module-metadata.txt" 2>/dev/null

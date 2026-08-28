@@ -160,7 +160,7 @@ def validate_image(image: Path) -> None:
     require(fstab, "fileencryption=aes-256-xts:aes-256-cts:v2+inlinecrypt_optimized+wrappedkey_v0", "packaged recovery.fstab")
     require(fstab, "/dev/block/sdg1", "packaged recovery.fstab")
     require(flags, "flags=storage;settingsstorage", "packaged twrp.flags")
-    require(flags, "keydirectory=/metadata/vold/metadata_encryption", "packaged twrp.flags")
+    require(flags, "fileencryption=ice:aes-256-cts", "packaged twrp.flags")
     require(flags, "/usb-otg               vfat", "packaged twrp.flags")
     print(f"image={image}")
     print(f"image_size={len(data)}")
@@ -211,7 +211,7 @@ for stale in ("usbotg-*", "/storage/usbotg-"):
     forbid(fstab, stale, "recovery.fstab")
 require(flags, "/data                  f2fs", "twrp.flags")
 require(flags, "flags=storage;settingsstorage", "twrp.flags")
-require(flags, "keydirectory=/metadata/vold/metadata_encryption", "twrp.flags")
+require(flags, "fileencryption=ice:aes-256-cts", "twrp.flags")
 require(flags, "/usb-otg               vfat", "twrp.flags")
 require(flags, "/dev/block/sdg        ", "twrp.flags")
 

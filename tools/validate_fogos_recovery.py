@@ -10,8 +10,8 @@ ROOT = Path(__file__).resolve().parents[1]
 DEVICE = ROOT / "device/motorola/fogos"
 MAX_BOOT_SIZE = 100_663_296
 EXPECTED_MODULES = [
-    "mmi_info.ko",
     "mmi_annotate.ko",
+    "mmi_info.ko",
     "sensors_class.ko",
     "exfat.ko",
     "mmi-smbcharger-iio.ko",

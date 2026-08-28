@@ -28,6 +28,12 @@
 import /init.recovery.qcom_decrypt.rc
 
 on early-init
+    # Start the QTI security services before TWRP attempts Android 17 FBE
+    # metadata decryption. These are recovery-local copies of the vendor
+    # services and do not alter userdata or verified-boot state.
+    start keymaster-4-1
+    start gatekeeper-1-0
+
     # TeamWin places vendor-ramdisk modules at /vendor/lib/modules/1.1.
     # Raw insmod has no dependency resolver, so mmi_annotate must precede
     # its mmi_info dependent. This does not touch USB HID or mouse input.
@@ -66,6 +72,20 @@ on property:twrp.modules.loaded=true
     wait /sys/class/power_supply/battery
     umount /firmware
 
+
+service keymaster-4-1 /system/bin/android.hardware.keymaster@4.1-service-qti
+    class core
+    user root
+    group root system
+    disabled
+    seclabel u:r:recovery:s0
+
+service gatekeeper-1-0 /system/bin/android.hardware.gatekeeper@1.0-service-qti
+    class core
+    user root
+    group root system
+    disabled
+    seclabel u:r:recovery:s0
 
 service set_permissive /system/bin/set_permissive.sh
     user root

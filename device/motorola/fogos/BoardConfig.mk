@@ -115,11 +115,11 @@ BOARD_HAS_LARGE_FILESYSTEM := true
 BOARD_HAS_NO_SELECT_BUTTON := true
 BOARD_SUPPRESS_SECURE_ERASE := true
 BOARD_USES_RECOVERY_AS_BOOT := true
-# Match the verified public inputs. The DTB is carried in the boot image.
-# Do not synthesize or request a recovery DTBO: no verified public dtbo.img is
-# checked into this repository, and mkbootimg otherwise creates a missing-rule
-# failure. The phone’s separate dtbo partition remains outside this candidate.
-BOARD_INCLUDE_DTB_IN_BOOTIMG := true
+# Match the verified v3 public inputs. The stock vendor_boot carries the DTB;
+# this recovery boot image must not request a standalone dtb.img that is absent
+# from the public tree. Do not synthesize or request a recovery DTBO either:
+# no verified public dtbo.img is checked in, and the phone’s separate dtbo
+# partition remains outside this candidate.
 TARGET_NO_RECOVERY := true
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery.fstab
 TARGET_RECOVERY_DENSITY := hdpi

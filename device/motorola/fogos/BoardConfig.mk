@@ -149,6 +149,10 @@ TW_MAX_BRIGHTNESS := 2047
 TW_EXCLUDE_DEFAULT_USB_INIT := true
 TW_EXTRA_LANGUAGES := true
 TW_INCLUDE_CRYPTO := true
+# Build the metadata-encryption decryptor used by Android 17 FBE userdata.
+TW_INCLUDE_FBE_METADATA_DECRYPT := true
+# Android 17 uses the modern fscrypt policy format for FBE metadata.
+TW_USE_FSCRYPT_POLICY := 2
 # Android stores user media under /data/media/0. This enables TWRP's
 # emulated-storage setup without formatting or wiping userdata.
 RECOVERY_SDCARD_ON_DATA := true

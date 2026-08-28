@@ -13,7 +13,7 @@ The VirgoYT tree contains the following device-specific work:
 | Area | Implementation |
 | --- | --- |
 | Kernel | Prebuilt kernel extracted from the inspected Evolution X fogos payload. |
-| Boot packaging | Header v3, LZ4 ramdisk, DTB/DTBO integration matching the maintained fogos board conventions, recovery-as-boot, and vendor-ramdisk support. |
+| Boot packaging | Header v3, LZ4 vendor-ramdisk support, DTB in boot, recovery-as-boot, and the recorded separate DTBO geometry. Recovery-DTBO embedding is intentionally disabled because no verified public `dtbo.img` is checked in. |
 | Dynamic partitions | Motorola `mot_dp_group` with `product`, `system`, `system_ext`, and `vendor`; the old QTI group and ODM target were removed. |
 | First-stage fstab | `recovery.fstab` is copied into the vendor-ramdisk first-stage location and the vendor fstab location. |
 | Encryption | F2FS userdata with inline AES-256, wrapped-key v2, metadata encryption, and `/metadata/vold/metadata_encryption`. |
@@ -25,7 +25,7 @@ The VirgoYT tree contains the following device-specific work:
 
 ## Important corrections in this audit
 
-The previous tree contained several crossed or stale values. `BOARD_SUPER_PARTITION_GROUPS` used a QTI group instead of the maintained Motorola group; an ODM image target was declared even though the verified payload inventory did not list an ODM partition; the product API/VNDK values were stale; the tree overrode platform/security-patch values; and the AVB section pointed to an AOSP test key. Those overrides were removed or aligned with the maintained fogos source.
+The previous tree contained several crossed or stale values. `BOARD_SUPER_PARTITION_GROUPS` used a QTI group instead of the maintained Motorola group; an ODM image target was declared even though the verified payload inventory did not list an ODM partition; unsupported product API/VNDK overrides caused the TWRP 12.1 `BOARD_SYSTEMSDK_VERSIONS (32)` check to fail; the tree overrode platform/security-patch values; and the AVB section pointed to an AOSP test key. Those overrides were removed or aligned with the maintained fogos source. The first local-tree build then exposed that recovery-DTBO inclusion had no checked-in prebuilt, so that flag was removed rather than fabricating an image.
 
 The USB init file also contained an unbalanced `${sys.usb.config` expansion at its tail and the sideload transition did not detach existing configfs functions before reusing `f1`. Both were corrected. A stray standalone `*/` token in `ueventd.rc` was removed. Early touch module insertion now uses raw dependency-safe order (`mmi_annotate` before `mmi_info`) while the generated vendor-ramdisk metadata retains the upstream load list.
 

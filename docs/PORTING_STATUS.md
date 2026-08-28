@@ -4,7 +4,7 @@
 
 This repository targets the Motorola Moto G45 5G, codename `fogos`, running the user-provided Evolution X 17.0 package `EvolutionX-17.0-20260812-fogos-12.1-Unofficial`. The ROM input record is maintained in [`ROM_INPUT.md`](ROM_INPUT.md). It records a version-2 `payload.bin`, `boot.img`, `vendor_boot.img`, `dtbo.img`, `vbmeta.img`, and `vbmeta_system.img`; no `init_boot` image was found in that payload.
 
-The checked-in recovery tree uses the inspected boot header and partition geometry: 4 KiB pages, header version 3, 100,663,296-byte boot and vendor-boot partitions, a 25,165,824-byte DTBO partition, A/B slots, recovery-as-boot, vendor-ramdisk support, metadata, and logical system partitions. The kernel and recovery module set are taken from the inspected fogos Android 17 payload record.
+The checked-in recovery tree uses the inspected boot header and partition geometry: 4 KiB pages, header version 3, 100,663,296-byte boot and vendor-boot partitions, a 25,165,824-byte DTBO partition, A/B slots, recovery-as-boot, vendor-ramdisk support, metadata, and logical system partitions. The separate DTBO size is recorded from the payload, but this repository does not embed a recovery DTBO because no verified public prebuilt is available. The kernel and recovery module set are taken from the inspected fogos Android 17 payload record.
 
 ## Corrected source areas
 
@@ -18,6 +18,8 @@ The checked-in recovery tree uses the inspected boot header and partition geomet
 | Mouse/HID | Input event, mouse, and USB HID paths remain enabled; the touchscreen patch does not remove mouse fallback. |
 | ADB/sideload | `adbd`, `minadbd`/sideload support, FunctionFS ADB, and the sideload gadget transition are retained and statically gated. |
 | Runtime syntax | The malformed USB property expansion and stray ueventd comment token were removed. |
+| Build environment | Unsupported product API/VNDK pins were removed; strict undefined-variable mode was removed because TWRP 12.1 reads unset helper variables during `mka`; the workflow verifies the local tree after lunch. |
+| DTBO | The payload’s separate DTBO partition geometry is retained as metadata, but no recovery DTBO is fabricated or requested without a verified public prebuilt. |
 | Signing | Fabricated security-patch overrides and AOSP test-key vbmeta synthesis were removed; stock signed vbmeta images remain outside this recovery build. |
 
 ## Release status

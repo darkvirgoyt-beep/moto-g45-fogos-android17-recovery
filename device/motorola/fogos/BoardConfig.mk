@@ -115,9 +115,10 @@ BOARD_HAS_LARGE_FILESYSTEM := true
 BOARD_HAS_NO_SELECT_BUTTON := true
 BOARD_SUPPRESS_SECURE_ERASE := true
 BOARD_USES_RECOVERY_AS_BOOT := true
-# Match the maintained fogos recovery packaging. The DTB is carried in the
-# boot image and the recovery DTBO is included using the board convention.
-BOARD_INCLUDE_RECOVERY_DTBO := true
+# Match the verified public inputs. The DTB is carried in the boot image.
+# Do not synthesize or request a recovery DTBO: no verified public dtbo.img is
+# checked into this repository, and mkbootimg otherwise creates a missing-rule
+# failure. The phone’s separate dtbo partition remains outside this candidate.
 BOARD_INCLUDE_DTB_IN_BOOTIMG := true
 TARGET_NO_RECOVERY := true
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery.fstab

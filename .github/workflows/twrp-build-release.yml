@@ -109,6 +109,10 @@ jobs:
           # compatible with this manifest branch.
           set -eo pipefail
           test -f build/envsetup.sh
+          # Some vendor setup scripts read TOP before envsetup assigns it.
+          # Export the checked-out source root explicitly so strict variable
+          # handling cannot abort initialization and vendor paths resolve.
+          export TOP="$PWD"
           source build/envsetup.sh
           # TWRP's custom lunch calls roomservice when the product is not
           # discoverable. Refuse that fallback and verify the checked-in tree

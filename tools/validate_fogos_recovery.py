@@ -264,6 +264,7 @@ require(modules_dep, "/lib/modules/chipone_tddi_v2_mmi.ko: /lib/modules/sensors_
 require(workflow, "TWRP_MANIFEST_BRANCH: twrp-12.1", "workflow")
 require(workflow, "validate_fogos_recovery.py", "workflow")
 require(workflow, "timeout-minutes: 360", "workflow")
+require(workflow, "export TOP=\"$PWD\"", "workflow")
 require(workflow, "inputs.publish_release == true", "workflow")
 for stale in ("Build fogos recovery baseline", "TWRP_MANIFEST_BRANCH: twrp-14.1", "testkey_rsa2048.pem"):
     forbid(workflow, stale, "workflow")

@@ -219,10 +219,11 @@ require(device_mk, "$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom", "device.mk")
 require(device_mk, "recovery/root/init.recovery.qcom.rc:recovery/root/init.recovery.qcom.rc", "device.mk")
 require(device_mk, "recovery/root/init.recovery.usb.rc:recovery/root/init.recovery.usb.rc", "device.mk")
 require(device_mk, "recovery/root/vendor/ueventd.rc:recovery/root/vendor/ueventd.rc", "device.mk")
-require(device_mk, "PRODUCT_SHIPPING_API_LEVEL := 34", "device.mk")
-require(device_mk, "PRODUCT_TARGET_VNDK_VERSION := 34", "device.mk")
-for stale in ("TARGET_COPY_OUT_ODM", "PRODUCT_SHIPPING_API_LEVEL := 30", "PRODUCT_TARGET_VNDK_VERSION := 30", "    odm "):
+for stale in ("TARGET_COPY_OUT_ODM", "    odm "):
     forbid(device_mk, stale, "device.mk")
+for number, line in enumerate(device_mk.splitlines(), 1):
+    if line.strip().startswith(("PRODUCT_SHIPPING_API_LEVEL :=", "PRODUCT_TARGET_VNDK_VERSION :=")):
+        raise AssertionError(f"unsupported product API/VNDK assignment in device.mk:{number}: {line}")
 
 # Init/ueventd syntax and user-requested input/USB behavior.
 require(init_usb, "sys.usb.config=sideload", "init.recovery.usb.rc")

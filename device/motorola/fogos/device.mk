@@ -76,11 +76,12 @@ PRODUCT_PACKAGES += \
     qcom_decrypt \
     qcom_decrypt_fbe
 
-# Shipping API level
-# fogos first shipped with Android 14 according to the maintained device tree;
-# keep the recovery product aligned with that vendor interface level.
-PRODUCT_SHIPPING_API_LEVEL := 34
-PRODUCT_TARGET_VNDK_VERSION := 34
+# Do not force PRODUCT_SHIPPING_API_LEVEL or PRODUCT_TARGET_VNDK_VERSION here.
+# The selected TWRP 12.1 manifest defines BOARD_SYSTEMSDK_VERSIONS=32; forcing
+# the Android 17 device input level (34) into this older framework branch causes
+# build/make/core/config.mk to reject the product before local lunch completes.
+# Android 17 compatibility is represented by the inspected kernel, modules,
+# fstab, vendor ramdisk, and partition inputs—not by a false framework override.
 
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += \

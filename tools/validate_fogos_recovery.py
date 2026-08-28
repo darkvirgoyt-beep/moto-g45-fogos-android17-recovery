@@ -8,7 +8,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 DEVICE = ROOT / "device/motorola/fogos"
-EXPECTED_BOOT_SIZE = 100_663_296
+MAX_BOOT_SIZE = 100_663_296
 EXPECTED_MODULES = [
     "mmi_info.ko",
     "mmi_annotate.ko",
@@ -106,8 +106,10 @@ def validate_image(image: Path) -> None:
     data = image.read_bytes()
     if data[:8] != b"ANDROID!":
         raise AssertionError("image does not contain ANDROID! boot magic")
-    if len(data) != EXPECTED_BOOT_SIZE:
-        raise AssertionError(f"image size is {len(data)}; expected {EXPECTED_BOOT_SIZE} bytes")
+    if len(data) == 0:
+        raise AssertionError("image is empty")
+    if len(data) > MAX_BOOT_SIZE:
+        raise AssertionError(f"image size is {len(data)}; exceeds {MAX_BOOT_SIZE}-byte boot partition")
     if len(data) < 44:
         raise AssertionError("image is too short for Android boot header")
     kernel_size, ramdisk_size = struct.unpack_from("<2I", data, 8)

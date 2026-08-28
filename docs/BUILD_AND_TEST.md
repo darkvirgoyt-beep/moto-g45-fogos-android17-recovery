@@ -23,7 +23,7 @@ python3 tools/validate_fogos_recovery.py out/target/product/fogos/boot.img
 
 ## Static checks
 
-The validator checks Android boot-header magic/version and exact 100,663,296-byte image size when an image is supplied. It also checks the Motorola dynamic-partition group, `/data` and wrapped-key encryption flags, emulated-storage setup, concrete OTG mapping, touchscreen module files and dependency order, input permissions, ADB/sideload FunctionFS wiring, balanced init property expansions, removal of stale test-key and version overrides, and absence of duplicate baseline workflow references.
+The validator checks Android boot-header magic/version and requires the generated image to be non-empty and no larger than the verified 100,663,296-byte boot partition when an image is supplied. It also checks the Motorola dynamic-partition group, `/data` and wrapped-key encryption flags, emulated-storage setup, concrete OTG mapping, touchscreen module files and dependency order, input permissions, ADB/sideload FunctionFS wiring, balanced init property expansions, removal of stale test-key and version overrides, and absence of duplicate baseline workflow references.
 
 ## Safe physical test order
 

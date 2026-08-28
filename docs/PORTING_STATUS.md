@@ -24,7 +24,7 @@ The checked-in recovery tree uses the inspected boot header and partition geomet
 
 ## Release status
 
-The current public artifact is an **unofficial Android 17 recovery candidate**, not a hardware-certified or permanently flashable image. GitHub Actions validates source invariants, image header, exact image size, checksum, module packaging, storage metadata, input permissions, and sideload wiring. CI cannot press the phone’s screen, decrypt the user’s installed `/data`, connect a real OTG mouse, or complete a host sideload session.
+The current public artifact is an **unofficial Android 17 recovery candidate**, not a hardware-certified or permanently flashable image. GitHub Actions validates source invariants, image header, non-empty image size within the 100,663,296-byte partition limit, checksum, module packaging, storage metadata, input permissions, and sideload wiring. CI cannot press the phone’s screen, decrypt the user’s installed `/data`, connect a real OTG mouse, or complete a host sideload session.
 
 ## Required physical acceptance
 

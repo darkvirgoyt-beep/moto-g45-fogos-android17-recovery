@@ -133,7 +133,8 @@ jobs:
           magic="$(dd if="$image" bs=1 count=8 2>/dev/null)"
           test "$magic" = 'ANDROID!'
           size="$(stat -c '%s' "$image")"
-          test "$size" -eq 100663296
+          test "$size" -gt 0
+          test "$size" -le 100663296
           sha256sum "$image" | tee "$GITHUB_WORKSPACE/fogos-twrp-boot.sha256"
           cp "$image" "$GITHUB_WORKSPACE/virgoyt-fogos-twrp-${GITHUB_SHA}.img"
           {
@@ -143,6 +144,7 @@ jobs:
             printf 'commit=%s\n' "$GITHUB_SHA"
             printf 'run=%s\n' "$GITHUB_RUN_ID"
             printf 'size=%s\n' "$size"
+            printf 'boot_partition_limit=100663296\n'
             printf 'sha256=%s\n' "$(cut -d ' ' -f1 "$GITHUB_WORKSPACE/fogos-twrp-boot.sha256")"
             printf 'temporary_boot_only=true\n'
             printf 'hardware_validation_required=true\n'

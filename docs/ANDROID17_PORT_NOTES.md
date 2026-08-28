@@ -31,7 +31,7 @@ The USB init file also contained an unbalanced `${sys.usb.config` expansion at i
 
 ## Validation boundary
 
-The repository validator checks the corrected paths, partition group, encryption flags, input rules, module files and order, init property expansions, USB sideload transition, absence of test-key overrides, exact boot image size/header, and—when given a built image—the actual cpio contents and packaged file bytes. A successful CI run remains a static result. It cannot certify hardware touch, mouse/OTG, user-data decryption, or host-side sideloading. Those must be tested on the exact phone by temporary boot before any permanent operation.
+The repository validator checks the corrected paths, partition group, encryption flags, input rules, module files and order, init property expansions, USB sideload transition, absence of test-key overrides, boot image header and upper-bound size, and—when given a built image—the actual cpio contents and packaged file bytes. A successful CI run remains a static result. It cannot certify hardware touch, mouse/OTG, user-data decryption, or host-side sideloading. Those must be tested on the exact phone by temporary boot before any permanent operation.
 
 ## References
 

@@ -101,7 +101,12 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/init.recovery.qcom.rc:recovery/root/init.recovery.qcom.rc \
     $(LOCAL_PATH)/recovery/root/init.recovery.usb.rc:recovery/root/init.recovery.usb.rc \
-    $(LOCAL_PATH)/recovery/root/vendor/ueventd.rc:recovery/root/vendor/ueventd.rc
+    $(LOCAL_PATH)/recovery/root/vendor/ueventd.rc:recovery/root/vendor/ueventd.rc \
+    $(LOCAL_PATH)/recovery/root/vendor/firmware/chipone_firmware.bin:recovery/root/vendor/firmware/chipone_firmware.bin \
+    $(LOCAL_PATH)/recovery/root/vendor/firmware/focaltech-csot-ft3681-22-0000-fogos.bin:recovery/root/vendor/firmware/focaltech-csot-ft3681-22-0000-fogos.bin \
+    $(LOCAL_PATH)/recovery/root/vendor/firmware/goodix-tm-gt9916S-23051702-646483c4-fogos.bin:recovery/root/vendor/firmware/goodix-tm-gt9916S-23051702-646483c4-fogos.bin \
+    $(LOCAL_PATH)/recovery/root/vendor/firmware/sec_s3nrn4v_firmware.bin:recovery/root/vendor/firmware/sec_s3nrn4v_firmware.bin \
+    $(LOCAL_PATH)/recovery/root/vendor/firmware/tm_goodix_cfg_group.bin:recovery/root/vendor/firmware/tm_goodix_cfg_group.bin
 
 # Explicit recovery-root module copies are required for this standalone boot
 # image. The vendor-ramdisk module variables above are retained for normal

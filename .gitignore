@@ -8,6 +8,8 @@ ccache/
 *.zip
 *.bin
 *.iso
+# Fogos touchscreen firmware is required recovery input data, not a build artifact.
+!device/motorola/fogos/recovery/root/vendor/firmware/*.bin
 
 # Device-private or locally collected files
 private-inputs/

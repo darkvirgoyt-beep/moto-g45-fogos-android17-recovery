@@ -27,6 +27,13 @@ EXPECTED_RAW_MODULE_ORDER = [
     "chipone_tddi_v2_mmi.ko",
     "ilitek_v3_mmi.ko",
 ]
+EXPECTED_TOUCHSCREEN_FIRMWARE = [
+    "chipone_firmware.bin",
+    "focaltech-csot-ft3681-22-0000-fogos.bin",
+    "goodix-tm-gt9916S-23051702-646483c4-fogos.bin",
+    "sec_s3nrn4v_firmware.bin",
+    "tm_goodix_cfg_group.bin",
+]
 
 
 def read(rel: str) -> str:
@@ -227,6 +234,15 @@ for module in EXPECTED_MODULES:
     require(device_mk, f"prebuilt/modules/{module}:recovery/root/vendor/lib/modules/1.1/{module}", "device.mk")
 for metadata in ("modules.dep", "modules.alias", "modules.softdep", "modules.load.recovery"):
     require(device_mk, f"prebuilt/modules/{metadata}:recovery/root/vendor/lib/modules/1.1/{metadata}", "device.mk")
+for firmware in EXPECTED_TOUCHSCREEN_FIRMWARE:
+    firmware_path = DEVICE / "recovery/root/vendor/firmware" / firmware
+    if not firmware_path.is_file() or firmware_path.stat().st_size == 0:
+        raise AssertionError(f"missing or empty touchscreen firmware: {firmware}")
+    require(
+        device_mk,
+        f"recovery/root/vendor/firmware/{firmware}:recovery/root/vendor/firmware/{firmware}",
+        "device.mk",
+    )
 for stale in ("TARGET_COPY_OUT_ODM", "    odm "):
     forbid(device_mk, stale, "device.mk")
 for number, line in enumerate(device_mk.splitlines(), 1):

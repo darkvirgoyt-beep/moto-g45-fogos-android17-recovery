@@ -101,6 +101,7 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/init.recovery.qcom.rc:recovery/root/init.recovery.qcom.rc \
     $(LOCAL_PATH)/recovery/root/init.recovery.usb.rc:recovery/root/init.recovery.usb.rc \
+    $(LOCAL_PATH)/recovery/root/system/bin/otg-install:recovery/root/system/bin/otg-install \
     $(LOCAL_PATH)/recovery/root/vendor/ueventd.rc:recovery/root/vendor/ueventd.rc \
     $(LOCAL_PATH)/recovery/root/vendor/firmware/chipone_firmware.bin:recovery/root/vendor/firmware/chipone_firmware.bin \
     $(LOCAL_PATH)/recovery/root/vendor/firmware/focaltech-csot-ft3681-22-0000-fogos.bin:recovery/root/vendor/firmware/focaltech-csot-ft3681-22-0000-fogos.bin \

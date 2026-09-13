@@ -1,0 +1,59 @@
+#!/system/bin/sh
+# fogos OTG installer: detect and mount USB storage, then install one explicit ZIP.
+# Does not modify or erase storage, and never auto-selects a package.
+set -eu
+
+MOUNTPOINT=/usb-otg
+mkdir -p "$MOUNTPOINT"
+
+find_otg_partition() {
+    # Prefer the audited fogos node, then accept a removable USB block partition
+    # if the kernel enumerates the OTG disk under another sdX name.
+    for node in /dev/block/sdg1 /dev/block/sd[a-z][0-9]; do
+        [ -b "$node" ] || continue
+        # fogos' audited OTG parent is /dev/block/sdg; accept it directly.
+        [ "$node" = /dev/block/sdg1 ] && { echo "$node"; return 0; }
+        base="${node##*/}"
+        sys="/sys/class/block/$base"
+        [ -e "$sys" ] || continue
+        parent="$(readlink -f "$sys")"
+        case "$parent" in
+            */usb*/*|*/host*/*) echo "$node"; return 0 ;;
+        esac
+    done
+    return 1
+}
+
+partition="$(find_otg_partition || true)"
+[ -n "$partition" ] || {
+    echo "No OTG storage detected. Connect a FAT32 USB drive and try again." >&2
+    exit 1
+}
+
+mountpoint -q "$MOUNTPOINT" 2>/dev/null || mount -t vfat -o nosuid,nodev "$partition" "$MOUNTPOINT"
+
+if [ "$#" -ne 1 ]; then
+    echo "OTG mounted at $MOUNTPOINT"
+    echo "Usage: otg-install /usb-otg/path/to/package.zip" >&2
+    find "$MOUNTPOINT" -maxdepth 2 -type f -iname '*.zip' -print 2>/dev/null || true
+    exit 2
+fi
+
+package="$1"
+case "$package" in
+    "$MOUNTPOINT"/*) ;;
+    *) echo "Package must be under $MOUNTPOINT" >&2; exit 2 ;;
+esac
+[ -f "$package" ] || { echo "ZIP not found: $package" >&2; exit 1; }
+command -v unzip >/dev/null 2>&1 || { echo "unzip is unavailable in this recovery" >&2; exit 1; }
+unzip -tqq "$package" || { echo "Invalid ZIP: $package" >&2; exit 1; }
+
+# TWRP owns the actual flash/install transaction and confirmation UI.
+if command -v twrp >/dev/null 2>&1; then
+    twrp install "$package"
+elif [ -x /sbin/twrp ]; then
+    /sbin/twrp install "$package"
+else
+    echo "TWRP installer command is unavailable; select this ZIP in Install > USB-OTG." >&2
+    exit 1
+fi

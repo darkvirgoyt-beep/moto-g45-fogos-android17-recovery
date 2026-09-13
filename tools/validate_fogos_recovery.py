@@ -193,6 +193,8 @@ workflow = read(".github/workflows/twrp-build-release.yml")
 magisk_helper = read("tools/install_magisk_fogos.sh")
 magisk_doc = read("docs/MAGISK_INSTALL.md")
 magisk_zip = ROOT / "device/motorola/fogos/prebuilt/magisk/Magisk-v30.7.zip"
+otg_helper = read("device/motorola/fogos/recovery/root/system/bin/otg-install")
+otg_doc = read("docs/OTG_INSTALL.md")
 modules_load = read("device/motorola/fogos/modules.load.recovery")
 prebuilt_modules_load = read("device/motorola/fogos/prebuilt/modules/modules.load.recovery")
 modules_dep = read("device/motorola/fogos/prebuilt/modules/modules.dep")
@@ -230,6 +232,21 @@ require(flags, "flags=storage;settingsstorage", "twrp.flags")
 require(flags, "fileencryption=ice:aes-256-cts", "twrp.flags")
 require(flags, "/usb-otg               vfat", "twrp.flags")
 require(flags, "/dev/block/sdg        ", "twrp.flags")
+require(fstab, "/dev/block/sdg1                                         /usb-otg", "recovery.fstab")
+require(fstab, "nofail", "recovery.fstab")
+for needle in (
+    "/dev/block/sdg1",
+    "mount -t vfat",
+    "unzip -tqq",
+    "twrp install",
+    "Does not modify or erase storage",
+):
+    require(otg_helper, needle, "recovery/root/system/bin/otg-install")
+require(device_mk, "recovery/root/system/bin/otg-install:recovery/root/system/bin/otg-install", "device.mk")
+for needle in ("/dev/block/sdg1", "nofail", "Install", "otg-install"):
+    require(otg_doc, needle, "docs/OTG_INSTALL.md")
+for forbidden in ("mkfs", "wipe", "rm -rf"):
+    forbid(otg_helper, forbidden, "recovery/root/system/bin/otg-install")
 
 # Magisk handoff safety: use TWRP's normal ZIP installer and never make a
 # destructive broad cleanup or target the nonexistent standalone recovery GPT.

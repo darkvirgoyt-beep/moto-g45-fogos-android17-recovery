@@ -2,6 +2,7 @@
 """Safety gates for the VirgoYT fogos Android 17 recovery tree and image."""
 from pathlib import Path
 import gzip
+import hashlib
 import struct
 import subprocess
 import sys
@@ -189,6 +190,9 @@ init_qcom = read("device/motorola/fogos/recovery/root/init.recovery.qcom.rc")
 init_usb = read("device/motorola/fogos/recovery/root/init.recovery.usb.rc")
 ueventd = read("device/motorola/fogos/recovery/root/vendor/ueventd.rc")
 workflow = read(".github/workflows/twrp-build-release.yml")
+magisk_helper = read("tools/install_magisk_fogos.sh")
+magisk_doc = read("docs/MAGISK_INSTALL.md")
+magisk_zip = ROOT / "device/motorola/fogos/prebuilt/magisk/Magisk-v30.7.zip"
 modules_load = read("device/motorola/fogos/modules.load.recovery")
 prebuilt_modules_load = read("device/motorola/fogos/prebuilt/modules/modules.load.recovery")
 modules_dep = read("device/motorola/fogos/prebuilt/modules/modules.dep")
@@ -226,6 +230,30 @@ require(flags, "flags=storage;settingsstorage", "twrp.flags")
 require(flags, "fileencryption=ice:aes-256-cts", "twrp.flags")
 require(flags, "/usb-otg               vfat", "twrp.flags")
 require(flags, "/dev/block/sdg        ", "twrp.flags")
+
+# Magisk handoff safety: use TWRP's normal ZIP installer and never make a
+# destructive broad cleanup or target the nonexistent standalone recovery GPT.
+for needle in (
+    '"${adb_cmd[@]}" wait-for-device',
+    "unzip -tqq",
+    '"${adb_cmd[@]}" push',
+    "Install -> $remote_path",
+    "does NOT erase /data, /data/adb",
+):
+    require(magisk_helper, needle, "tools/install_magisk_fogos.sh")
+for needle in (
+    "no standalone recovery partition",
+    "Install ZIP",
+    "fastboot flash recovery",
+    "performs **no arbitrary deletion**",
+):
+    require(magisk_doc, needle, "docs/MAGISK_INSTALL.md")
+for forbidden in ("rm -rf /data", "rm -rf /data/adb", "fastboot flash recovery"):
+    forbid(magisk_helper, forbidden, "tools/install_magisk_fogos.sh")
+if not magisk_zip.is_file() or magisk_zip.stat().st_size == 0:
+    raise AssertionError("missing bundled Magisk-v30.7.zip")
+if hashlib.sha256(magisk_zip.read_bytes()).hexdigest() != "e0d32d2123532860f97123d927b1bb86c4e08e6fd8a48bfc6b5bee0afae9ebd5":
+    raise AssertionError("bundled Magisk-v30.7.zip checksum mismatch")
 
 # Product and runtime packaging invariants.
 require(device_mk, "minadbd", "device.mk")

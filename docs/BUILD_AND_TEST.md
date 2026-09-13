@@ -31,6 +31,8 @@ First preserve the original ROM archive and the stock `boot.img`, `vendor_boot.i
 
 In recovery, test finger touch across menus and sliders, then test a USB mouse through OTG. Mount Data using the existing lock-screen credential. Confirm that Internal Storage is not zero megabytes and that `/data/media/0` is visible. Test external OTG storage, normal ADB, ADB sideload with a known-good non-destructive ZIP, successful ZIP verification/install, and a clean reboot back into Android. Confirm that existing user files remain present.
 
+For the supported Magisk handoff, use [`tools/install_magisk_fogos.sh`](../tools/install_magisk_fogos.sh) and then TWRP's normal **Install ZIP** screen as described in [`MAGISK_INSTALL.md`](MAGISK_INSTALL.md). This helper does not erase `/data/adb` or other Magisk paths. The fogos payload has no standalone `recovery` partition, so `fastboot flash recovery ...` must be rejected; recovery is part of the A/B boot layout.
+
 If any test fails, remain on temporary boot, save `recovery.log`, record the exact build tag and error text, and reboot normally. Never use Format Data, Wipe Data, erase userdata, disable verified boot, or flash a random partition to fix a failed test.
 
 ## Permanent-flash gate

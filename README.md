@@ -106,6 +106,7 @@ Do not relock the bootloader while a custom ROM is installed. Do not use an imag
 | `docs/PERMANENT_INSTALL.md` | Recovery-as-boot permanent installation and rollback procedure |
 | `docs/MAGISK_ROOT_TROUBLESHOOTING.md` | Separate Magisk root investigation |
 | `docs/MAGISK_INSTALL.md` | Safe TWRP ZIP-based Magisk installation procedure |
+| `docs/TOUCHSCREEN.md` | Touch input fix, mouse fallback, and runtime diagnostics |
 | `docs/TWRP_STORAGE_SIDELOAD_FIX.md` | Data-media, encryption, OTG, and sideload fixes |
 | `docs/assets/virgoyt-banner.jpg` | VirgoYT project branding image |
 

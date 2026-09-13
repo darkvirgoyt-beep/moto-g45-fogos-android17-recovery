@@ -1,0 +1,21 @@
+#!/system/bin/sh
+# Capture fogos touchscreen/input diagnostics; read-only and non-destructive.
+set -u
+out="${1:-/tmp/fogos-touch-diagnostics.txt}"
+{
+  echo '=== input devices ==='
+  cat /proc/bus/input/devices 2>&1 || true
+  echo '=== input nodes ==='
+  ls -l /dev/input 2>&1 || true
+  echo '=== loaded modules ==='
+  lsmod 2>&1 || true
+  echo '=== touch/module kernel messages ==='
+  dmesg 2>&1 | grep -iE 'touch|input|goodix|ilitek|chipone|synaptics|focal|firmware|module' || true
+  echo '=== event capabilities ==='
+  for node in /dev/input/event*; do
+    [ -e "$node" ] || continue
+    echo "--- $node ---"
+    getevent -lp "$node" 2>&1 || true
+  done
+} >"$out"
+echo "Saved $out"

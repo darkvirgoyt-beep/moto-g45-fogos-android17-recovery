@@ -195,6 +195,8 @@ magisk_doc = read("docs/MAGISK_INSTALL.md")
 magisk_zip = ROOT / "device/motorola/fogos/prebuilt/magisk/Magisk-v30.7.zip"
 otg_helper = read("device/motorola/fogos/recovery/root/system/bin/otg-install")
 otg_doc = read("docs/OTG_INSTALL.md")
+touch_diag = read("device/motorola/fogos/recovery/root/system/bin/touch-diagnostics")
+touch_doc = read("docs/TOUCHSCREEN.md")
 modules_load = read("device/motorola/fogos/modules.load.recovery")
 prebuilt_modules_load = read("device/motorola/fogos/prebuilt/modules/modules.load.recovery")
 modules_dep = read("device/motorola/fogos/prebuilt/modules/modules.dep")
@@ -243,10 +245,22 @@ for needle in (
 ):
     require(otg_helper, needle, "recovery/root/system/bin/otg-install")
 require(device_mk, "recovery/root/system/bin/otg-install:recovery/root/system/bin/otg-install", "device.mk")
+require(device_mk, "recovery/root/system/bin/touch-diagnostics:recovery/root/system/bin/touch-diagnostics", "device.mk")
 for needle in ("/dev/block/sdg1", "nofail", "Install", "otg-install"):
     require(otg_doc, needle, "docs/OTG_INSTALL.md")
 for forbidden in ("mkfs", "wipe", "rm -rf"):
     forbid(otg_helper, forbidden, "recovery/root/system/bin/otg-install")
+
+# Touch must not be blacklisted, and the mouse/HID fallback must remain wired.
+require(board, 'TW_INPUT_BLACKLIST := ""', "BoardConfig.mk")
+for needle in ("/dev/input/event*", "/dev/input/mice", "/dev/input/mouse*"):
+    require(ueventd, needle, "ueventd.rc")
+for needle in ("/proc/bus/input/devices", "getevent -lp", "dmesg"):
+    require(touch_diag, needle, "recovery/root/system/bin/touch-diagnostics")
+for forbidden in ("rm -rf", "mkfs", "input keyevent"):
+    forbid(touch_diag, forbidden, "recovery/root/system/bin/touch-diagnostics")
+for needle in ("TW_INPUT_BLACKLIST", "mouse fallback", "touch-diagnostics"):
+    require(touch_doc, needle, "docs/TOUCHSCREEN.md")
 
 # Magisk handoff safety: use TWRP's normal ZIP installer and never make a
 # destructive broad cleanup or target the nonexistent standalone recovery GPT.

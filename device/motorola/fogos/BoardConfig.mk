@@ -159,6 +159,9 @@ RECOVERY_SDCARD_ON_DATA := true
 TW_NO_EXFAT_FUSE := true
 TW_INCLUDE_REPACKTOOLS := true
 TW_INCLUDE_RESETPROP := true
+# Do not let a generic TWRP input blacklist discard the fogos touchscreen.
+# USB HID mouse input remains enabled separately by ueventd.rc.
+TW_INPUT_BLACKLIST := ""
 
 # Statusbar icons flags
 TW_STATUS_ICONS_ALIGN := center

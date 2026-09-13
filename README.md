@@ -16,6 +16,7 @@
   <a href="https://github.com/darkvirgoyt-beep/moto-g45-fogos-android17-recovery/actions">Actions</a> •
   <a href="docs/ROM_INPUT.md">ROM input</a> •
   <a href="docs/BUILD_AND_TEST.md">Build and test guide</a> •
+  <a href="docs/PERMANENT_INSTALL.md">Permanent installation</a> •
   <a href="docs/MAGISK_ROOT_TROUBLESHOOTING.md">Root troubleshooting</a>
 </p>
 
@@ -56,7 +57,7 @@ The repository contains the unofficial `fogos` custom-TWRP tree, Android 17 port
 | USB mouse/OTG configuration | Preserved and statically gated |
 | ADB/sideload wiring | Present and statically gated; host/device test required |
 | Android 17 recovery image | Built and released as a temporary-boot candidate |
-| Permanent flash | **Blocked until every physical gate passes** |
+| Permanent flash | Installation procedure documented; stock-image backup and slot verification remain mandatory |
 | OrangeFox Android 17 build | No verified build identified |
 
 A successful CI build proves source and image invariants only. It cannot certify touchscreen, encryption, mouse, or sideload behavior on a physical phone.
@@ -101,6 +102,7 @@ Do not relock the bootloader while a custom ROM is installed. Do not use an imag
 | `docs/RECOVERY_SOURCES.md` | Official TWRP and LineageOS source assessment |
 | `docs/ANDROID17_PORT_NOTES.md` | Android 17 board and recovery porting notes |
 | `docs/BUILD_AND_TEST.md` | Reproducible build and no-wipe temporary-boot procedure |
+| `docs/PERMANENT_INSTALL.md` | Recovery-as-boot permanent installation and rollback procedure |
 | `docs/MAGISK_ROOT_TROUBLESHOOTING.md` | Separate Magisk root investigation |
 | `docs/TWRP_STORAGE_SIDELOAD_FIX.md` | Data-media, encryption, OTG, and sideload fixes |
 | `docs/assets/virgoyt-banner.jpg` | VirgoYT project branding image |
